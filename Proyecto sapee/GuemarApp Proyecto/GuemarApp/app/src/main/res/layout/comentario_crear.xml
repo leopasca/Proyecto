@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/LayoutComentario">
+
+    <EditText
+        android:id="@+id/edtComentario"
+        android:layout_width="match_parent"
+        android:layout_height="200px"
+        android:hint="Comentario"
+        android:inputType="textMultiLine"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingLeft="60dp"
+        android:visibility="invisible"
+        android:background="#9d9b9b">
+
+      </EditText>
+
+    <ImageButton
+        android:id="@+id/imbComentarioHoja"
+        android:layout_width="20pt"
+        android:layout_height="20pt"
+        android:background="@mipmap/comentario_hoja"
+        android:clickable="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/comentario_hoja"
+        android:layout_above="@+id/button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <Button
+        android:layout_width="40pt"
+        android:layout_height="20pt"
+        android:text="Aceptar"
+        android:layout_alignBottom="@+id/edtComentario"
+        android:layout_alignRight="@+id/edtComentario"
+        android:visibility="invisible"
+        android:id="@+id/button" />
+
+</RelativeLayout>
