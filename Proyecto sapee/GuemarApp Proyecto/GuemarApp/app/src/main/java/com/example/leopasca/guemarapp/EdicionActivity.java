@@ -452,28 +452,28 @@ public class EdicionActivity extends AppCompatActivity
     }
     public Dialog dialogourl()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Video");
-        builder.setMessage("Ingrese una url");
-        final EditText input = new EditText(EdicionActivity.this);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setTitle("Video");
+        builder1.setMessage("Ingrese una url");
+        /*final EditText input = new EditText(EdicionActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
-        builder.setView(input);
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+        builder.setView(input);*/
+        builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                urlVideo = input.getText().toString();
+                //urlVideo = input.getText().toString();
             }
 
         });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+        builder1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 pdfView.resetZoomWithAnimation();
 
             }
         });
-        return builder.create();
+        return builder1.create();
     }
     private View.OnTouchListener videoGuemara = new View.OnTouchListener() {
 
@@ -489,6 +489,7 @@ public class EdicionActivity extends AppCompatActivity
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
+                        Log.e("GULE","Entra");
                         Dialog dialogourl = dialogourl();
                         dialogourl.show();
                         x = event.getX();
@@ -599,10 +600,10 @@ public class EdicionActivity extends AppCompatActivity
         @Override
         public void onClick(View view) {
             Dialog dialogo = dialogoCrearVideo();
-            Log.e("GULE", "1");
+            Log.e("GULE", "video");
             dialogo.show();
-            Log.e("Gule", "2");
-            Log.e("GULE", "3");
+            Log.e("Gule", "2video");
+            Log.e("GULE", "3video");
 
 
         }
@@ -610,7 +611,7 @@ public class EdicionActivity extends AppCompatActivity
     };
     public Dialog dialogoCrearVideo()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Video");
         builder.setMessage("Presione el documento para crear un Video");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
