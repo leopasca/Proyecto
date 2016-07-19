@@ -111,12 +111,15 @@ public class EdicionActivity extends AppCompatActivity
         private boolean ignore = false;
         ImageButton imbBoton;
         private float x, y;
+    private float xVideo, yVideo;
         ArrayList<EditText> ListButons = new ArrayList<>();
         ArrayList<ImageButton> ListImageButons = new ArrayList<>();
         ArrayList<ImageView> ListAsteriscos = new ArrayList<>();
          Map<Integer,EditText>MapEDT = new HashMap<Integer, EditText>();
         Map<Integer,ImageButton>MapIMB = new HashMap<Integer, ImageButton>();
         Map<Integer,ImageView>MapIMG = new HashMap<Integer, ImageView>();
+        Map<Integer,ImageButton>MapIMBVideo = new HashMap<Integer, ImageButton>();
+        Map<Integer,ImageView>MapIMGVideo = new HashMap<Integer, ImageView>();
         List<Comentario>liscom ;
     Button Pasar;
 
@@ -157,6 +160,7 @@ public class EdicionActivity extends AppCompatActivity
         imbComentario.setOnClickListener(imbComentario_click);
         if (ExisteImbBoton == true) {
             imbComentarioHoja.setOnClickListener(imbComentarioHoja_click);
+
         }
         ProgressTask task = new ProgressTask();
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
@@ -272,8 +276,6 @@ public class EdicionActivity extends AppCompatActivity
                         catch (IOException|JSONException e) {
                             Log.d("Error", e.getMessage());
                         }
-                        Toast.makeText(EdicionActivity.this, "Ando", Toast.LENGTH_SHORT).show();
-
                         i= Integer.parseInt(IdComentario);
                         imbBoton.setId(i);
                         ImageView imgAsterisco = new ImageView(getApplicationContext());
@@ -422,7 +424,7 @@ public class EdicionActivity extends AppCompatActivity
                 catch (IOException|JSONException e) {
                     Log.d("Error", e.getMessage());
                 }
-                Toast.makeText(EdicionActivity.this, "se ha eliminado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EdicionActivity.this, "Se ha eliminado", Toast.LENGTH_SHORT).show();
                 MapEDT.get(idef).setVisibility(View.INVISIBLE);
                 MapIMB.get(idef).setVisibility(View.INVISIBLE);
                 MapIMG.get(idef).setVisibility(View.INVISIBLE);
@@ -460,10 +462,25 @@ public class EdicionActivity extends AppCompatActivity
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
+        input.setHint("URL");
         builder1.setView(input);
         builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                urlVideo = input.getText().toString();
+               if(!input.getText().toString().isEmpty()) {
+                   if(input.getText().toString().length()>=11) {
+                       urlVideo taskVideo = new urlVideo();
+                       taskVideo.execute(input.getText().toString().trim().substring(input.getText().toString().trim().length() - 11));
+                   }
+                   else
+                   {
+                       Toast.makeText(EdicionActivity.this, "Ingrese una url completa", Toast.LENGTH_SHORT).show();
+                   }
+                   
+               }
+                else
+               {
+                   Toast.makeText(EdicionActivity.this, "Ingrese una url", Toast.LENGTH_SHORT).show();
+               }
             }
 
         });
@@ -477,85 +494,17 @@ public class EdicionActivity extends AppCompatActivity
     }
     private View.OnTouchListener videoGuemara = new View.OnTouchListener() {
 
-
-        int ex, way;
-
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (ignore == true) {
                 return false;
             } else {
-
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
-                        Log.e("GULE","Entra");
-                        new Thread (new Runnable() {
-                            @Override
-                            public void run() {
-                                Dialog dialogourl = dialogourl();
-                                dialogourl.show();
-                            }
-                        }).start();
-
-                        x = event.getX();
-                        y = event.getY();
-                        String IdVideo="";
-                        if (android.os.Build.VERSION.SDK_INT > 9) {
-                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                            StrictMode.setThreadPolicy(policy);
-                        }
-
-                        ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
-                        imbBotonVideo.setImageResource(R.mipmap.video_hoja);
-                        imbBotonVideo.setX(600);
-                        imbBotonVideo.setY(y);
-                        imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
-
-                        //ListImageButons.add(i,imbBoton);
-                        layout.addView(imbBotonVideo);
-                        HttpPost post = new HttpPost();
-                        post.setHeader("content-type", "application/json");
-
-                        try {
-                            OkHttpClient client = new  OkHttpClient();
-                            String url ="http://leopashost.hol.es/bd/CrearVideo.php";
-                            JSONObject dato = new JSONObject();
-                            dato.put("url",urlVideo);
-                            dato.put("CordVideoY",y);
-                            dato.put("CordVideoAsteriscoX",x);
-                            dato.put("CordVideoAsteriscoY",y);
-                            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                            Request request = new Request.Builder()
-                                    .url(url)
-                                    .post(body)
-                                    .build();
-                            Response response = client.newCall(request).execute();
-                            String prueba = response.body().string();
-                            IdVideo =  getIdComentario(prueba);
-
-                        }
-                        catch (IOException|JSONException e) {
-                            Log.d("Error", e.getMessage());
-                        }
-                        Toast.makeText(EdicionActivity.this, "Ando", Toast.LENGTH_SHORT).show();
-
-                        //j= Integer.parseInt(IdVideo);
-                        //imbBotonVideo.setId(j);
-                        ImageView imgAsterisco = new ImageView(getApplicationContext());
-                        //MapIMB.put(i,imbBoton);
-                        imgAsterisco.setImageResource(R.mipmap.asteriscoideo);
-                        imgAsterisco.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
-                        imgAsterisco.setX(x);
-                        imgAsterisco.setY(y);
-                        //MapIMG.put(i,imgAsterisco);
-                        layout.addView(imgAsterisco);
-
-                        imbBotonVideo.setOnClickListener(imbComentarioHoja_click);
-                        imbBotonVideo.setOnLongClickListener(imbEliminar_click);
-
-                        Log.e("error","8");
-
+                        xVideo = event.getX();
+                        yVideo = event.getY();
+                        Dialog dialogourl = dialogourl();
+                        dialogourl.show();
                         ignore = true;
 
                 }
@@ -747,32 +696,143 @@ public class EdicionActivity extends AppCompatActivity
 
 
     }
-/*    class urlVideo extends AsyncTask<Void,Void,String>
+  class urlVideo extends AsyncTask<String,Void,String>
 
     {
-        protected String doInBackground(Void...params) {
-            AlertDialog.Builder builder1 = new AlertDialog.Builder(getApplicationContext());
-            builder1.setTitle("Video");
-            builder1.setMessage("Ingrese una url");
-            EditText input = new EditText(getApplicationContext());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            input.setLayoutParams(lp);
-            builder1.setView(input);
-            builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    urlVideo = input.getText().toString();
-                }
+        protected void onPostExecute(String video)
+        {
+            super.onPostExecute(video);
 
-            });
-            builder1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    pdfView.resetZoomWithAnimation();
+            String IdVideo="";
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            }
 
-                }
-            });
+            ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
+            imbBotonVideo.setImageResource(R.mipmap.video_hoja);
+            imbBotonVideo.setX(600);
+            imbBotonVideo.setY(yVideo);
+            imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
+
+            //ListImageButons.add(i,imbBoton);
+            layout.addView(imbBotonVideo);
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/CrearVideo.php";
+                JSONObject dato = new JSONObject();
+                dato.put("url",video);
+                dato.put("CordVideoY",yVideo);
+                dato.put("CordVideoAsteriscoX",xVideo);
+                dato.put("CordVideoAsteriscoY",yVideo);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                String prueba = response.body().string();
+                IdVideo =  getIdVideo(prueba);
+
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+
+            j= Integer.parseInt(IdVideo);
+            imbBotonVideo.setId(j);
+            ImageView imgAsterisco = new ImageView(getApplicationContext());
+            MapIMBVideo.put(j,imbBotonVideo);
+            imgAsterisco.setImageResource(R.mipmap.asteriscoideo);
+            imgAsterisco.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+            imgAsterisco.setX(xVideo);
+            imgAsterisco.setY(yVideo);
+            MapIMGVideo.put(j,imgAsterisco);
+            layout.addView(imgAsterisco);
+
+            //imbBotonVideo.setOnClickListener(imbVideoHoja_click);
+            imbBotonVideo.setOnLongClickListener(imbEliminarVideo_click);
+
+
         }
-    }*/
+        protected String doInBackground(String...params) {
+            String url = params[0];
+            return url;
+        }
+        String getIdVideo (String json)
+        {
+            try {
+
+                String prueba = json.replace("[","");
+                String prueba2 = prueba.replace("]","");
+                JSONObject obj=new JSONObject(prueba2);
+                return obj.getString("IdVideo");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "Error";
+            }
+        }
+
+    }
+    public View.OnLongClickListener imbEliminarVideo_click = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            final int id = v.getId();
+            Dialog dialogo = EliminarVideo(id);
+            dialogo.show();
+            return true;
+        }
+    };
+    private Dialog EliminarVideo(final int idef) {
+
+        Log.e("GULE", "3");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Eliminar Video");
+        builder.setMessage("¿Esta seguro que quiere eliminar el Video?");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                HttpPost post = new HttpPost();
+                post.setHeader("content-type", "application/json");
+
+                try {
+                    OkHttpClient client = new  OkHttpClient();
+                    String url ="http://leopashost.hol.es/bd/EliminarVideo.php";
+                    JSONObject dato = new JSONObject();
+                    dato.put("IdVideo", idef);
+
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    Log.d("Response", response.body().string());
+                }
+                catch (IOException|JSONException e) {
+                    Log.d("Error", e.getMessage());
+                }
+                Toast.makeText(EdicionActivity.this, "Se ha eliminado", Toast.LENGTH_SHORT).show();
+                MapIMBVideo.get(idef).setVisibility(View.INVISIBLE);
+                MapIMGVideo.get(idef).setVisibility(View.INVISIBLE);
+                MapIMGVideo.remove(idef);
+                MapIMBVideo.remove((idef));
+
+
+
+            }
+
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                pdfView.resetZoomWithAnimation();
+
+            }
+        });
+        return builder.create();
+    }
 
 }
