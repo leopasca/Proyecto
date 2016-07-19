@@ -455,15 +455,15 @@ public class EdicionActivity extends AppCompatActivity
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Video");
         builder1.setMessage("Ingrese una url");
-        /*final EditText input = new EditText(EdicionActivity.this);
+        final EditText input = new EditText(EdicionActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
-        builder.setView(input);*/
+        builder1.setView(input);
         builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //urlVideo = input.getText().toString();
+                urlVideo = input.getText().toString();
             }
 
         });
@@ -490,8 +490,14 @@ public class EdicionActivity extends AppCompatActivity
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         Log.e("GULE","Entra");
-                        Dialog dialogourl = dialogourl();
-                        dialogourl.show();
+                        new Thread (new Runnable() {
+                            @Override
+                            public void run() {
+                                Dialog dialogourl = dialogourl();
+                                dialogourl.show();
+                            }
+                        }).start();
+
                         x = event.getX();
                         y = event.getY();
                         String IdVideo="";
@@ -534,15 +540,15 @@ public class EdicionActivity extends AppCompatActivity
                         }
                         Toast.makeText(EdicionActivity.this, "Ando", Toast.LENGTH_SHORT).show();
 
-                        j= Integer.parseInt(IdVideo);
-                        imbBotonVideo.setId(j);
+                        //j= Integer.parseInt(IdVideo);
+                        //imbBotonVideo.setId(j);
                         ImageView imgAsterisco = new ImageView(getApplicationContext());
-                        MapIMB.put(i,imbBoton);
+                        //MapIMB.put(i,imbBoton);
                         imgAsterisco.setImageResource(R.mipmap.asteriscoideo);
                         imgAsterisco.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
                         imgAsterisco.setX(x);
                         imgAsterisco.setY(y);
-                        MapIMG.put(i,imgAsterisco);
+                        //MapIMG.put(i,imgAsterisco);
                         layout.addView(imgAsterisco);
 
                         imbBotonVideo.setOnClickListener(imbComentarioHoja_click);
@@ -741,5 +747,32 @@ public class EdicionActivity extends AppCompatActivity
 
 
     }
+/*    class urlVideo extends AsyncTask<Void,Void,String>
+
+    {
+        protected String doInBackground(Void...params) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(getApplicationContext());
+            builder1.setTitle("Video");
+            builder1.setMessage("Ingrese una url");
+            EditText input = new EditText(getApplicationContext());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            builder1.setView(input);
+            builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    urlVideo = input.getText().toString();
+                }
+
+            });
+            builder1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    pdfView.resetZoomWithAnimation();
+
+                }
+            });
+        }
+    }*/
 
 }
