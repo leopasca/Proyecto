@@ -69,6 +69,15 @@
                 android:scaleType="fitXY"
                 android:src="@mipmap/video"
                 android:layout_marginLeft="30px"/>
+            <ImageButton
+                android:id="@+id/imbVoz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/mic"
+                android:clickable="true"
+                android:scaleType="fitXY"
+                android:src="@mipmap/mic"
+                android:layout_marginLeft="30px"/>
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>

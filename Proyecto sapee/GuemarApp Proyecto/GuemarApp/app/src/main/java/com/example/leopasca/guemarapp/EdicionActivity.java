@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -98,6 +99,7 @@ public class EdicionActivity extends AppCompatActivity
         PDFView pdfView;
         ImageButton imbComentario;
         ImageButton imbResaltador;
+        ImageButton imbVoz;
         RelativeLayout layout;
         String strCordenadas = "";
         ImageButton imbComentarioHoja;
@@ -111,7 +113,7 @@ public class EdicionActivity extends AppCompatActivity
         private boolean ignore = false;
         ImageButton imbBoton;
         private float x, y;
-    private float xVideo, yVideo;
+        private float xVideo, yVideo;
         ArrayList<EditText> ListButons = new ArrayList<>();
         ArrayList<ImageButton> ListImageButons = new ArrayList<>();
         ArrayList<ImageView> ListAsteriscos = new ArrayList<>();
@@ -121,9 +123,14 @@ public class EdicionActivity extends AppCompatActivity
         Map<Integer,ImageButton>MapIMBVideo = new HashMap<Integer, ImageButton>();
         Map<Integer,ImageView>MapIMGVideo = new HashMap<Integer, ImageView>();
         List<Comentario>liscom ;
-    Button Pasar;
+        List<Video>lisvid ;
+        Button Pasar;
 
-
+        private Path drawPath;
+        private Paint drawPaint,canvasPaint;
+        private int paintColor= 0xFFFF66;
+        private Canvas drawCanvas;
+        private Bitmap canvasBitmap;
 
 
 
@@ -137,6 +144,7 @@ public class EdicionActivity extends AppCompatActivity
         imbComentarioHoja = (ImageButton) findViewById(R.id.imbComentarioHoja);
         Pasar = (Button)findViewById(R.id.btnPasar);
         imbVideo =(ImageButton)findViewById(R.id.imbVideo);
+        imbVoz = (ImageButton)findViewById(R.id.imbVideo);
 
 
     }
@@ -156,7 +164,9 @@ public class EdicionActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         liscom = new ArrayList<>();
+        lisvid = new ArrayList<>();
         pdfView.fromAsset("beitza.pdf").load();
+
         imbComentario.setOnClickListener(imbComentario_click);
         if (ExisteImbBoton == true) {
             imbComentarioHoja.setOnClickListener(imbComentarioHoja_click);
@@ -164,8 +174,11 @@ public class EdicionActivity extends AppCompatActivity
         }
         ProgressTask task = new ProgressTask();
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
+        ListarVideos taskVideo = new ListarVideos();
+        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php");
         imbVideo.setOnClickListener(imbVideo_click);
         Pasar.setOnClickListener(pasar);
+
 
 
     }
@@ -174,7 +187,7 @@ public class EdicionActivity extends AppCompatActivity
         @Override
         public void onClick(View view) {
 
-            Intent elintent = new Intent(getApplicationContext(), videoPrueba.class);
+            Intent elintent = new Intent(getApplicationContext(), pruebaNotaVoz.class);
             startActivity(elintent);
         }
     };
@@ -753,7 +766,7 @@ public class EdicionActivity extends AppCompatActivity
             MapIMGVideo.put(j,imgAsterisco);
             layout.addView(imgAsterisco);
 
-            //imbBotonVideo.setOnClickListener(imbVideoHoja_click);
+            imbBotonVideo.setOnClickListener(imbVideoHoja_click);
             imbBotonVideo.setOnLongClickListener(imbEliminarVideo_click);
 
 
@@ -834,5 +847,188 @@ public class EdicionActivity extends AppCompatActivity
         });
         return builder.create();
     }
+    public View.OnClickListener imbVideoHoja_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          int id = v.getId();
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
 
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/TraerUrl.php";
+                JSONObject dato = new JSONObject();
+                dato.put("IdVideo", id);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                Log.d("url", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+        }
+    };
+    //Nota de voz
+    public View.OnClickListener imbVoz_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+    class ListarVideos extends AsyncTask<String,Void, List<Video>> {
+        private OkHttpClient client = new OkHttpClient();
+        @Override
+        protected void onPostExecute(List<Video> VideoResult) {
+            super.onPostExecute(VideoResult);
+            if (!VideoResult.isEmpty()) {
+                lisvid = VideoResult;
+                //JSONArray jsonobj = new JSONArray(json);
+             /*  for(int i=0;i<liscom.size();i++) {
+               String json = liscom.get(i).toString();
+               }*/
+                for(Video video:lisvid)
+                {
+                    Integer idVideo = video.IdVideo;
+                    String url = video.url;
+                    String CordVideoY = video.CordVideoY.toString();
+                    String CordVideoAsteriscoX = video.CordVideoAsteriscoX.toString();
+                    String CordVideoAsteriscoY = video.CordVideoAsteriscoY.toString();
+                    Float CordVideoYfloat = Float.parseFloat(CordVideoY);
+                    Float CordVideoAsteriscoXfloat = Float.parseFloat(CordVideoAsteriscoX);
+                    Float CordVideoAsteriscoYfloat = Float.parseFloat(CordVideoAsteriscoY);
+
+                    ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
+                    imbBotonVideo.setImageResource(R.mipmap.video_hoja);
+                    imbBotonVideo.setX(600);
+                    imbBotonVideo.setY(CordVideoYfloat);
+                    imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
+                    layout.addView(imbBotonVideo);
+                    imbBotonVideo.setId(idVideo);
+
+                    ImageView imgAsteriscoVideo = new ImageView(getApplicationContext());
+                    MapIMBVideo.put(idVideo,imbBotonVideo);
+                    imgAsteriscoVideo.setImageResource(R.mipmap.asteriscoideo);
+                    imgAsteriscoVideo.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+                    imgAsteriscoVideo.setX(CordVideoAsteriscoXfloat);
+                    imgAsteriscoVideo.setY(CordVideoAsteriscoYfloat);
+                    MapIMGVideo.put(idVideo,imgAsteriscoVideo);
+                    layout.addView(imgAsteriscoVideo);
+
+
+                    imbBotonVideo.setOnClickListener(imbVideoHoja_click);
+                    imbBotonVideo.setOnLongClickListener(imbEliminarVideo_click);
+
+                }
+                Log.d("Dalee",liscom.toString());
+
+
+            }
+        }
+        List<Comentario> listson = new ArrayList<Comentario>();
+
+
+        @Override
+        protected List<Video> doInBackground(String...params) {
+            String url = params[0];
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                //Log.d("Anda",response.body().string());
+                return parse(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Video>();
+            }
+        }
+        public  List<Video> listvid;
+
+        List<Video>parse(String json)throws JSONException
+
+        {
+            JSONArray jsonobj = new JSONArray(json);
+            listvid = new ArrayList<Video>();
+            for(int i=0;i<jsonobj.length();i++)
+            {
+
+                JSONObject objComen = jsonobj.getJSONObject(i);
+                Integer IdVideo = objComen.getInt("IdVideo");
+                String url = objComen.getString("url");
+                Double CordVideoY = objComen.getDouble("CordVideoY");
+                Double CordVideoAsteriscoX = objComen.getDouble("CordVideoAsteriscoY");
+                Double CordVideoAsteriscoY= objComen.getDouble("CordVideoAsteriscoY");
+                Video video = new Video(IdVideo, url, CordVideoY,CordVideoAsteriscoX,CordVideoAsteriscoY);
+                listvid.add(video);
+
+            }
+            return listvid;
+        }
+
+
+    }
+
+
+    /*PARTE RESALTAR
+
+    private void setupDrawing()
+    {
+        drawPath = new Path();
+        drawPaint = new Paint();
+        drawPaint.setColor(paintColor);
+        drawPaint.setAntiAlias(true);
+        drawPaint.setStrokeWidth(10);
+        drawPaint.setStyle(Paint.Style.STROKE);
+        drawPaint.setStrokeJoin(Paint.Join.ROUND);
+        drawPaint.setStrokeCap(Paint.Cap.ROUND);
+        canvasPaint = new Paint(Paint.SUBPIXEL_TEXT_FLAG);
+
+
+    }
+   /* @Override
+    protected void onSizeChanged(int w, int h, int oldv, int oldh)
+    {
+        super.onSizeChanged(w,h,oldv,oldh);
+    }
+    protected void OnDraw(Canvas canvas)
+    {
+        canvas.drawBitmap(canvasBitmap,0,0,canvasPaint);
+        canvas.drawPath(drawPath,drawPaint);
+    }
+    private View.OnTouchListener Resaltar = new View.OnTouchListener() {
+
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            float touchx = event.getX();
+            float touchy = event.getY();
+            switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    drawPath.moveTo(touchx,touchy);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    drawPath.lineTo(touchx,touchy);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    drawPath.lineTo(touchx,touchy);
+                    drawCanvas.drawPath(drawPath, drawPaint);
+                    drawPath.reset();
+                    break;
+                default:
+                    return false;
+
+            }
+            v.invalidate();
+            return true;
+
+        }
+
+
+    };*/
 }
