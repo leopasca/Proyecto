@@ -22,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".videoPrueba" />
+        <activity android:name=".videoPrueba"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".pruebaNotaVoz"></activity>
     </application>
 

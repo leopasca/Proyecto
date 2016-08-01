@@ -1,5 +1,6 @@
 package com.example.leopasca.guemarapp;
 
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -15,18 +16,24 @@ public class videoPrueba extends YouTubeBaseActivity {
     Button b;
     private YouTubePlayerView player;
     private YouTubePlayer.OnInitializedListener onInitializedListener;
+    String urlVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_prueba);
+        Bundle extras =getIntent().getExtras();
+        if(extras!=null)
+        {
+            urlVideo = extras.getString("url");
+        }
         player = (YouTubePlayerView) findViewById(R.id.view);
         onInitializedListener = new YouTubePlayer.OnInitializedListener()
         {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer,boolean b)
             {
-                youTubePlayer.loadVideo("Mb4HgRzB1d8");
+                youTubePlayer.loadVideo(urlVideo);
             }
             @Override
             public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
@@ -43,4 +50,8 @@ public class videoPrueba extends YouTubeBaseActivity {
             player.initialize("AIzaSyBHjhgkWnHuriClFo-rLyrW9iBxYSn1wmE", onInitializedListener);
         }
     };*/
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }

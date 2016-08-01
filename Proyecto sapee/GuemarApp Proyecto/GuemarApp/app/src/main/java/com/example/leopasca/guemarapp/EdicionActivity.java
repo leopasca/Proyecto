@@ -18,10 +18,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfRenderer;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
@@ -70,6 +72,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -101,36 +104,35 @@ public class EdicionActivity extends AppCompatActivity
         ImageButton imbResaltador;
         ImageButton imbVoz;
         RelativeLayout layout;
-        String strCordenadas = "";
         ImageButton imbComentarioHoja;
         Boolean ExisteImbBoton = false;
         ImageButton imbVideo;
-        EditText edtComentario;
         String urlVideo ="";
         int i = 0;
         int j =0;
-        boolean abierto = false;
+        int k=0;
         private boolean ignore = false;
-        ImageButton imbBoton;
+        ImageButton imbVideoHoja;
         private float x, y;
         private float xVideo, yVideo;
-        ArrayList<EditText> ListButons = new ArrayList<>();
-        ArrayList<ImageButton> ListImageButons = new ArrayList<>();
-        ArrayList<ImageView> ListAsteriscos = new ArrayList<>();
+        private float xNota, yNota;
          Map<Integer,EditText>MapEDT = new HashMap<Integer, EditText>();
         Map<Integer,ImageButton>MapIMB = new HashMap<Integer, ImageButton>();
         Map<Integer,ImageView>MapIMG = new HashMap<Integer, ImageView>();
         Map<Integer,ImageButton>MapIMBVideo = new HashMap<Integer, ImageButton>();
         Map<Integer,ImageView>MapIMGVideo = new HashMap<Integer, ImageView>();
+    Map<Integer,ImageButton>MapIMBNota = new HashMap<Integer, ImageButton>();
+    Map<Integer,ImageView>MapIMGNota = new HashMap<Integer, ImageView>();
         List<Comentario>liscom ;
         List<Video>lisvid ;
         Button Pasar;
-
         private Path drawPath;
         private Paint drawPaint,canvasPaint;
         private int paintColor= 0xFFFF66;
         private Canvas drawCanvas;
         private Bitmap canvasBitmap;
+        private MediaPlayer mediaPlayer;
+        private String OUTPUT_FILE;
 
 
 
@@ -144,7 +146,8 @@ public class EdicionActivity extends AppCompatActivity
         imbComentarioHoja = (ImageButton) findViewById(R.id.imbComentarioHoja);
         Pasar = (Button)findViewById(R.id.btnPasar);
         imbVideo =(ImageButton)findViewById(R.id.imbVideo);
-        imbVoz = (ImageButton)findViewById(R.id.imbVideo);
+        imbVoz = (ImageButton)findViewById(R.id.imbVoz);
+        imbVideoHoja =(ImageButton)findViewById(R.id.imbVideoHoja);
 
 
     }
@@ -170,15 +173,17 @@ public class EdicionActivity extends AppCompatActivity
         imbComentario.setOnClickListener(imbComentario_click);
         if (ExisteImbBoton == true) {
             imbComentarioHoja.setOnClickListener(imbComentarioHoja_click);
+            imbComentarioHoja.setOnLongClickListener(imbEliminar_click);
 
         }
+        //imbVideoHoja.setOnClickListener(imbVideoHoja_click);
         ProgressTask task = new ProgressTask();
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
         ListarVideos taskVideo = new ListarVideos();
         taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php");
         imbVideo.setOnClickListener(imbVideo_click);
         Pasar.setOnClickListener(pasar);
-
+        imbVoz.setOnClickListener(imbVoz_click);
 
 
     }
@@ -851,34 +856,46 @@ public class EdicionActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
           int id = v.getId();
-            HttpPost post = new HttpPost();
-            post.setHeader("content-type", "application/json");
-
+            String urlVideo ="";
+            HttpGet get = new HttpGet();
+            get.setHeader("content-type", "application/json");
             try {
                 OkHttpClient client = new  OkHttpClient();
-                String url ="http://leopashost.hol.es/bd/TraerUrl.php";
+                String url ="http://leopashost.hol.es/bd/TraerUrl.php?IdVideo="+id;
                 JSONObject dato = new JSONObject();
-                dato.put("IdVideo", id);
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                Request request = new Request.Builder()
+                dato.put("IdVideo",id);
+                Request request1 = new Request.Builder()
                         .url(url)
-                        .post(body)
+                        .get()
                         .build();
-                Response response = client.newCall(request).execute();
+                Response response = client.newCall(request1).execute();
+               String resp = response.body().string();
+                urlVideo = getURLVideo(resp);
                 Log.d("url", response.body().string());
             }
             catch (IOException|JSONException e) {
                 Log.d("Error", e.getMessage());
             }
+            Intent intentAVideo = new Intent(getApplicationContext(),videoPrueba.class);
+            intentAVideo.putExtra("url",urlVideo);
+            startActivity(intentAVideo);
         }
     };
-    //Nota de voz
-    public View.OnClickListener imbVoz_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    String getURLVideo (String json)
+    {
+        try {
 
+            String prueba = json.replace("[","");
+            String prueba2 = prueba.replace("]","");
+            JSONObject obj=new JSONObject(prueba2);
+            return obj.getString("url");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "Error";
         }
-    };
+    }
+
     class ListarVideos extends AsyncTask<String,Void, List<Video>> {
         private OkHttpClient client = new OkHttpClient();
         @Override
@@ -973,6 +990,336 @@ public class EdicionActivity extends AppCompatActivity
 
     }
 
+
+
+    //Nota de voz
+    public View.OnClickListener imbVoz_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v){
+            Dialog dialogo = dialogoCrearNota();
+
+            dialogo.show();
+
+
+
+        }
+
+    };
+    public Dialog dialogoCrearNota()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Nota de voz");
+        builder.setMessage("Presione el documento para crear una Nota");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                ignore = false;
+                pdfView.setOnTouchListener(notaGuemara);
+
+
+            }
+
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                pdfView.resetZoomWithAnimation();
+
+            }
+        });
+        return builder.create();
+    }
+    private View.OnTouchListener notaGuemara = new View.OnTouchListener() {
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (ignore == true) {
+                return false;
+            } else {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        xNota   = event.getX();
+                        yNota = event.getY();
+                        Dialog dialogoNombreNota = dialogoNombreNota();
+                        dialogoNombreNota.show();
+                        ignore = true;
+
+                }
+            }
+            return true;
+        }
+
+    };
+    public Dialog dialogoNombreNota()
+    {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setTitle("Nota de voz");
+        builder1.setMessage("Ingrese el nombre de la nota");
+        final EditText input = new EditText(EdicionActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        input.setHint("Nombre");
+        builder1.setView(input);
+        builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if(!input.getText().toString().isEmpty()) {
+
+                        TaskVoz taskVoz = new TaskVoz();
+                        taskVoz.execute(input.getText().toString());
+
+
+                }
+                else
+                {
+                    Toast.makeText(EdicionActivity.this, "Ingrese un nombre", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
+        builder1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                pdfView.resetZoomWithAnimation();
+
+            }
+        });
+        return builder1.create();
+    }
+    class TaskVoz extends AsyncTask<String,Void,String>
+
+    {
+        protected void onPostExecute(String nombre)
+        {
+            super.onPostExecute(nombre);
+
+            String IdNota="";
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            }
+
+            ImageButton imbBotonNota = new ImageButton(getApplicationContext());
+            imbBotonNota.setImageResource(R.mipmap.nota_hoja);
+            imbBotonNota.setX(600);
+            imbBotonNota.setY(yNota);
+            imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
+
+            //ListImageButons.add(i,imbBoton);
+            layout.addView(imbBotonNota);
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/CrearNotaDeVoz.php";
+                JSONObject dato = new JSONObject();
+                dato.put("Nombre",nombre);
+                dato.put("CordNotaY",yNota);
+                dato.put("CordNotaAsteriscoX",xNota);
+                dato.put("CordNotaAsteriscoY",yNota);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                String prueba = response.body().string();
+                IdNota =  getIdNota(prueba);
+
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+
+            k= Integer.parseInt(IdNota);
+            imbBotonNota.setId(k);
+            ImageView imgAsterisco = new ImageView(getApplicationContext());
+            MapIMBNota.put(k,imbBotonNota);
+            imgAsterisco.setImageResource(R.mipmap.asterisco_nota);
+            imgAsterisco.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+            imgAsterisco.setX(xNota);
+            imgAsterisco.setY(yNota);
+            MapIMGNota.put(k,imgAsterisco);
+            layout.addView(imgAsterisco);
+
+            imbBotonNota.setOnClickListener(imbNotaHoja_click);
+            imbBotonNota.setOnLongClickListener(imbEliminarVideo_click);
+
+            Intent intentANota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
+            intentANota.putExtra("Nombre",nombre);
+            startActivity(intentANota);
+        }
+        protected String doInBackground(String...params) {
+            String nombreNota = params[0];
+            return nombreNota;
+        }
+        String getIdNota (String json)
+        {
+            try {
+
+                String prueba = json.replace("[","");
+                String prueba2 = prueba.replace("]","");
+                JSONObject obj=new JSONObject(prueba2);
+                return obj.getString("IdNota");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "Error";
+            }
+        }
+
+    }
+    public View.OnClickListener imbNotaHoja_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            String Nombre ="";
+
+            HttpGet get = new HttpGet();
+            get.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+id;
+                JSONObject dato = new JSONObject();
+                dato.put("IdNota",id);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .build();
+                Response response = client.newCall(request).execute();
+                String resp = response.body().string();
+                Nombre = getNombreNota(resp);
+                Log.d("url", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+Nombre+".3gpp";
+            try
+            {
+                playRecording();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
+    private void playRecording() throws Exception
+    {
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setDataSource(OUTPUT_FILE);
+        if(mediaPlayer!=null) {
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        }
+    }
+    String getNombreNota (String json)
+    {
+        try {
+
+            String prueba = json.replace("[","");
+            String prueba2 = prueba.replace("]","");
+            JSONObject obj=new JSONObject(prueba2);
+            return obj.getString("Nombre");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "Error";
+        }
+    }
+    class ListarNotas extends AsyncTask<String,Void, List<Nota>> {
+        private OkHttpClient client = new OkHttpClient();
+        @Override
+        protected void onPostExecute(List<Video> VideoResult) {
+            super.onPostExecute(VideoResult);
+            if (!VideoResult.isEmpty()) {
+                lisvid = VideoResult;
+                //JSONArray jsonobj = new JSONArray(json);
+             /*  for(int i=0;i<liscom.size();i++) {
+               String json = liscom.get(i).toString();
+               }*/
+                for(Video video:lisvid)
+                {
+                    Integer idVideo = video.IdVideo;
+                    String url = video.url;
+                    String CordVideoY = video.CordVideoY.toString();
+                    String CordVideoAsteriscoX = video.CordVideoAsteriscoX.toString();
+                    String CordVideoAsteriscoY = video.CordVideoAsteriscoY.toString();
+                    Float CordVideoYfloat = Float.parseFloat(CordVideoY);
+                    Float CordVideoAsteriscoXfloat = Float.parseFloat(CordVideoAsteriscoX);
+                    Float CordVideoAsteriscoYfloat = Float.parseFloat(CordVideoAsteriscoY);
+
+                    ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
+                    imbBotonVideo.setImageResource(R.mipmap.video_hoja);
+                    imbBotonVideo.setX(600);
+                    imbBotonVideo.setY(CordVideoYfloat);
+                    imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
+                    layout.addView(imbBotonVideo);
+                    imbBotonVideo.setId(idVideo);
+
+                    ImageView imgAsteriscoVideo = new ImageView(getApplicationContext());
+                    MapIMBVideo.put(idVideo,imbBotonVideo);
+                    imgAsteriscoVideo.setImageResource(R.mipmap.asteriscoideo);
+                    imgAsteriscoVideo.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+                    imgAsteriscoVideo.setX(CordVideoAsteriscoXfloat);
+                    imgAsteriscoVideo.setY(CordVideoAsteriscoYfloat);
+                    MapIMGVideo.put(idVideo,imgAsteriscoVideo);
+                    layout.addView(imgAsteriscoVideo);
+
+
+                    imbBotonVideo.setOnClickListener(imbVideoHoja_click);
+                    imbBotonVideo.setOnLongClickListener(imbEliminarVideo_click);
+
+                }
+                Log.d("Dalee",liscom.toString());
+
+
+            }
+        }
+        List<Comentario> listson = new ArrayList<Comentario>();
+
+
+        @Override
+        protected List<Video> doInBackground(String...params) {
+            String url = params[0];
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                //Log.d("Anda",response.body().string());
+                return parse(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Video>();
+            }
+        }
+        public  List<Video> listvid;
+
+        List<Video>parse(String json)throws JSONException
+
+        {
+            JSONArray jsonobj = new JSONArray(json);
+            listvid = new ArrayList<Video>();
+            for(int i=0;i<jsonobj.length();i++)
+            {
+
+                JSONObject objComen = jsonobj.getJSONObject(i);
+                Integer IdVideo = objComen.getInt("IdVideo");
+                String url = objComen.getString("url");
+                Double CordVideoY = objComen.getDouble("CordVideoY");
+                Double CordVideoAsteriscoX = objComen.getDouble("CordVideoAsteriscoY");
+                Double CordVideoAsteriscoY= objComen.getDouble("CordVideoAsteriscoY");
+                Video video = new Video(IdVideo, url, CordVideoY,CordVideoAsteriscoX,CordVideoAsteriscoY);
+                listvid.add(video);
+
+            }
+            return listvid;
+        }
+
+
+    }
 
     /*PARTE RESALTAR
 

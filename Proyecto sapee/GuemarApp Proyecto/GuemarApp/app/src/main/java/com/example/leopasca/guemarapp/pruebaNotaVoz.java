@@ -12,13 +12,17 @@ import java.io.File;
 
 public class pruebaNotaVoz extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private MediaRecorder recorder;
     private String OUTPUT_FILE;
+    private MediaRecorder recorder;
+    String nombreNota;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prueba_nota_voz);
-        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/audiorecorder.3gpp";
+        Bundle extras = getIntent().getExtras();
+        nombreNota=extras.getString("Nombre");
+        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
     }
     public void butonApretado(View view)
     {
