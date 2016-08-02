@@ -7,56 +7,121 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.leopasca.guemarapp.pruebaNotaVoz">
+    tools:context="com.example.leopasca.guemarapp.pruebaNotaVoz"
+    android:background="#59a1a4">
 
-    <Button
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Empezar a grabar"
-        android:id="@+id/btnEmpezar"
+        android:id="@+id/imageView2"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:onClick="butonApretado" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Terminar de grabar"
-        android:id="@+id/btnTerminar"
-        android:layout_below="@+id/btnEmpezar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="45dp"
+        android:src="@drawable/circulo4"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:nestedScrollingEnabled="true"
-        android:onClick="butonApretado" />
+        android:layout_alignParentEnd="true" />
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/imgGrabar"
+        android:layout_marginTop="77dp"
+        android:background="@mipmap/mic_inter3"
+        android:src="@mipmap/mic_inter3"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="butonApretado" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgTerminar"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="20dp"
+        android:background="@mipmap/terminar"
+        android:src="@mipmap/terminar"
+        android:layout_alignParentTop="true"
+        android:onClick="butonApretado" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgPlay"
+        android:layout_marginTop="340dp"
+        android:background="@mipmap/play"
+        android:src="@mipmap/play"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:nestedScrollingEnabled="false"
+        android:onClick="butonApretado" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgPausa"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="285dp"
+        android:background="@mipmap/pause"
+        android:src="@mipmap/pause"
+        android:layout_alignParentTop="true"
+        android:onClick="butonApretado" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Grabar"
+        android:id="@+id/textView"
+        android:layout_below="@+id/imgGrabar"
+        android:layout_centerHorizontal="true"
+        android:textColor="#fffefe"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Parar"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/imgTerminar"
+        android:layout_alignLeft="@+id/imgTerminar"
+        android:layout_alignStart="@+id/imgTerminar"
+        android:layout_alignRight="@+id/imgTerminar"
+        android:layout_alignEnd="@+id/imgTerminar"
+        android:textColor="#fffefe"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Pausa"
+        android:id="@+id/textView3"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignRight="@+id/imgPausa"
+        android:layout_alignEnd="@+id/imgPausa"
+        android:textColor="#fffefe"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Play"
-        android:id="@+id/btnPlay"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="butonApretado" />
+        android:id="@+id/textView4"
+        android:layout_below="@+id/imgPlay"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="#fffefe" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Parar reproduccion"
-        android:id="@+id/btnParar"
-        android:layout_below="@+id/btnPlay"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/txvAudio"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="68dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:onClick="butonApretado" />
+        android:textColor="#fffefe"
+        android:textStyle="bold" />
 </RelativeLayout>

@@ -125,6 +125,7 @@ public class EdicionActivity extends AppCompatActivity
     Map<Integer,ImageView>MapIMGNota = new HashMap<Integer, ImageView>();
         List<Comentario>liscom ;
         List<Video>lisvid ;
+         List<Nota>lisnot ;
         Button Pasar;
         private Path drawPath;
         private Paint drawPaint,canvasPaint;
@@ -168,6 +169,7 @@ public class EdicionActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         liscom = new ArrayList<>();
         lisvid = new ArrayList<>();
+        lisnot = new ArrayList<>();
         pdfView.fromAsset("beitza.pdf").load();
 
         imbComentario.setOnClickListener(imbComentario_click);
@@ -181,6 +183,8 @@ public class EdicionActivity extends AppCompatActivity
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
         ListarVideos taskVideo = new ListarVideos();
         taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php");
+        ListarNotas listarNotas = new ListarNotas();
+        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php");
         imbVideo.setOnClickListener(imbVideo_click);
         Pasar.setOnClickListener(pasar);
         imbVoz.setOnClickListener(imbVoz_click);
@@ -1142,7 +1146,7 @@ public class EdicionActivity extends AppCompatActivity
             layout.addView(imgAsterisco);
 
             imbBotonNota.setOnClickListener(imbNotaHoja_click);
-            imbBotonNota.setOnLongClickListener(imbEliminarVideo_click);
+            imbBotonNota.setOnLongClickListener(imbEditaNota_click);
 
             Intent intentANota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
             intentANota.putExtra("Nombre",nombre);
@@ -1212,6 +1216,10 @@ public class EdicionActivity extends AppCompatActivity
             mediaPlayer.prepare();
             mediaPlayer.start();
         }
+        else
+        {
+            Toast.makeText(EdicionActivity.this, "No existe la nota de voz", Toast.LENGTH_SHORT).show();
+        }
     }
     String getNombreNota (String json)
     {
@@ -1230,45 +1238,45 @@ public class EdicionActivity extends AppCompatActivity
     class ListarNotas extends AsyncTask<String,Void, List<Nota>> {
         private OkHttpClient client = new OkHttpClient();
         @Override
-        protected void onPostExecute(List<Video> VideoResult) {
-            super.onPostExecute(VideoResult);
-            if (!VideoResult.isEmpty()) {
-                lisvid = VideoResult;
+        protected void onPostExecute(List<Nota> notaResult) {
+            super.onPostExecute(notaResult);
+            if (!notaResult.isEmpty()) {
+               lisnot = notaResult;
                 //JSONArray jsonobj = new JSONArray(json);
              /*  for(int i=0;i<liscom.size();i++) {
                String json = liscom.get(i).toString();
                }*/
-                for(Video video:lisvid)
+                for(Nota nota:lisnot)
                 {
-                    Integer idVideo = video.IdVideo;
-                    String url = video.url;
-                    String CordVideoY = video.CordVideoY.toString();
-                    String CordVideoAsteriscoX = video.CordVideoAsteriscoX.toString();
-                    String CordVideoAsteriscoY = video.CordVideoAsteriscoY.toString();
-                    Float CordVideoYfloat = Float.parseFloat(CordVideoY);
-                    Float CordVideoAsteriscoXfloat = Float.parseFloat(CordVideoAsteriscoX);
-                    Float CordVideoAsteriscoYfloat = Float.parseFloat(CordVideoAsteriscoY);
+                    Integer idNota = nota.IdNota;
+                    String Nombre = nota.Nombre;
+                    String CordNotaY = nota.CordNotaY.toString();
+                    String CordNotaAsteriscoX = nota.CordNotaAsteriscoX.toString();
+                    String CordNotaAsteriscoY = nota.CordNotaAsteriscoY.toString();
+                    Float CordNotaYfloat = Float.parseFloat(CordNotaY);
+                    Float CordNotaAsteriscoXfloat = Float.parseFloat(CordNotaAsteriscoX);
+                    Float CordNotaAsteriscoYfloat = Float.parseFloat(CordNotaAsteriscoY);
 
-                    ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
-                    imbBotonVideo.setImageResource(R.mipmap.video_hoja);
-                    imbBotonVideo.setX(600);
-                    imbBotonVideo.setY(CordVideoYfloat);
-                    imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
-                    layout.addView(imbBotonVideo);
-                    imbBotonVideo.setId(idVideo);
+                    ImageButton imbBotonNota = new ImageButton(getApplicationContext());
+                    imbBotonNota.setImageResource(R.mipmap.nota_hoja);
+                    imbBotonNota.setX(600);
+                    imbBotonNota.setY(CordNotaYfloat);
+                    imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
+                    layout.addView(imbBotonNota);
+                    imbBotonNota.setId(idNota);
 
-                    ImageView imgAsteriscoVideo = new ImageView(getApplicationContext());
-                    MapIMBVideo.put(idVideo,imbBotonVideo);
-                    imgAsteriscoVideo.setImageResource(R.mipmap.asteriscoideo);
-                    imgAsteriscoVideo.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
-                    imgAsteriscoVideo.setX(CordVideoAsteriscoXfloat);
-                    imgAsteriscoVideo.setY(CordVideoAsteriscoYfloat);
-                    MapIMGVideo.put(idVideo,imgAsteriscoVideo);
-                    layout.addView(imgAsteriscoVideo);
+                    ImageView imgAsteriscoNota = new ImageView(getApplicationContext());
+                    MapIMBNota.put(idNota,imbBotonNota);
+                    imgAsteriscoNota.setImageResource(R.mipmap.asterisco_nota);
+                    imgAsteriscoNota.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+                    imgAsteriscoNota.setX(CordNotaAsteriscoXfloat);
+                    imgAsteriscoNota.setY(CordNotaAsteriscoYfloat);
+                    MapIMGNota.put(idNota,imgAsteriscoNota);
+                    layout.addView(imgAsteriscoNota);
 
 
-                    imbBotonVideo.setOnClickListener(imbVideoHoja_click);
-                    imbBotonVideo.setOnLongClickListener(imbEliminarVideo_click);
+                    imbBotonNota.setOnClickListener(imbNotaHoja_click);
+                    imbBotonNota.setOnLongClickListener(imbEditaNota_click);
 
                 }
                 Log.d("Dalee",liscom.toString());
@@ -1280,7 +1288,7 @@ public class EdicionActivity extends AppCompatActivity
 
 
         @Override
-        protected List<Video> doInBackground(String...params) {
+        protected List<Nota> doInBackground(String...params) {
             String url = params[0];
 
             Request request = new Request.Builder()
@@ -1292,35 +1300,65 @@ public class EdicionActivity extends AppCompatActivity
                 return parse(response.body().string());
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
-                return new ArrayList<Video>();
+                return new ArrayList<Nota>();
             }
         }
-        public  List<Video> listvid;
+        public  List<Nota> listnot;
 
-        List<Video>parse(String json)throws JSONException
+        List<Nota>parse(String json)throws JSONException
 
         {
             JSONArray jsonobj = new JSONArray(json);
-            listvid = new ArrayList<Video>();
+            listnot = new ArrayList<Nota>();
             for(int i=0;i<jsonobj.length();i++)
             {
 
                 JSONObject objComen = jsonobj.getJSONObject(i);
-                Integer IdVideo = objComen.getInt("IdVideo");
-                String url = objComen.getString("url");
-                Double CordVideoY = objComen.getDouble("CordVideoY");
-                Double CordVideoAsteriscoX = objComen.getDouble("CordVideoAsteriscoY");
-                Double CordVideoAsteriscoY= objComen.getDouble("CordVideoAsteriscoY");
-                Video video = new Video(IdVideo, url, CordVideoY,CordVideoAsteriscoX,CordVideoAsteriscoY);
-                listvid.add(video);
+                Integer IdNota = objComen.getInt("IdNota");
+                String Nombre = objComen.getString("Nombre");
+                Double CordNotaY = objComen.getDouble("CordNotaY");
+                Double CordNotaAsteriscoX = objComen.getDouble("CordNotaAsteriscoY");
+                Double CordNotaAsteriscoY= objComen.getDouble("CordNotaAsteriscoY");
+                Nota nota = new Nota(IdNota, Nombre, CordNotaY,CordNotaAsteriscoX,CordNotaAsteriscoY);
+                listnot.add(nota);
 
             }
-            return listvid;
+            return listnot;
         }
 
 
     }
+    public View.OnLongClickListener imbEditaNota_click = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int id = v.getId();
+            String Nombre ="";
 
+            HttpGet get = new HttpGet();
+            get.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+id;
+                JSONObject dato = new JSONObject();
+                dato.put("IdNota",id);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .build();
+                Response response = client.newCall(request).execute();
+                String resp = response.body().string();
+                Nombre = getNombreNota(resp);
+                Log.d("url", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            Intent intentAPruebaNota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
+            intentAPruebaNota.putExtra("Nombre",Nombre);
+            startActivity(intentAPruebaNota);
+            return true;
+        }
+    };
     /*PARTE RESALTAR
 
     private void setupDrawing()

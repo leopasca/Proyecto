@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -15,20 +17,27 @@ public class pruebaNotaVoz extends AppCompatActivity {
     private String OUTPUT_FILE;
     private MediaRecorder recorder;
     String nombreNota;
+    TextView txvAudio;
+    public void ObtenerReferencias()
+    {
+        txvAudio =(TextView)findViewById(R.id.txvAudio);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prueba_nota_voz);
+        ObtenerReferencias();
         Bundle extras = getIntent().getExtras();
         nombreNota=extras.getString("Nombre");
         OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
+        txvAudio.setText(nombreNota);
     }
     public void butonApretado(View view)
     {
         switch (view.getId())
         {
-            case R.id.btnEmpezar:
+            case R.id.imgGrabar:
                 try
                 {
                     beginRecording();
@@ -39,7 +48,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 }
                 break;
 
-            case R.id.btnTerminar:
+            case R.id.imgTerminar:
                 try
                 {
                     stopnRecording();
@@ -50,7 +59,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 }
                 break;
 
-            case R.id.btnPlay:
+            case R.id.imgPlay:
                 try
                 {
                     playRecording();
@@ -61,7 +70,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 }
                 break;
 
-            case R.id.btnParar:
+            case R.id.imgPausa:
                 try
                 {
                     pauseRecording();
