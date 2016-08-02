@@ -1355,6 +1355,7 @@ public class EdicionActivity extends AppCompatActivity
             }
             Intent intentAPruebaNota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
             intentAPruebaNota.putExtra("Nombre",Nombre);
+            intentAPruebaNota.putExtra("IdNota",id);
             startActivity(intentAPruebaNota);
             return true;
         }

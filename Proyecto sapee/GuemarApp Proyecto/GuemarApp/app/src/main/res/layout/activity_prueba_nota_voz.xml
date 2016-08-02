@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imgGrabar"
-        android:layout_marginTop="77dp"
+        android:layout_marginTop="100dp"
         android:background="@mipmap/mic_inter3"
         android:src="@mipmap/mic_inter3"
         android:layout_alignParentTop="true"
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imgPlay"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="360dp"
         android:background="@mipmap/play"
         android:src="@mipmap/play"
         android:layout_alignParentTop="true"
@@ -58,9 +58,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/imgPausa"
         android:layout_marginTop="220dp"
-        android:layout_marginLeft="285dp"
+        android:layout_marginLeft="270dp"
         android:background="@mipmap/pause"
         android:src="@mipmap/pause"
+        android:layout_alignParentTop="true"
+        android:onClick="butonApretado" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgEliminar"
+        android:layout_marginTop="420dp"
+        android:layout_centerHorizontal="true"
+        android:background="@mipmap/eliminar"
+        android:src="@mipmap/eliminar"
         android:layout_alignParentTop="true"
         android:onClick="butonApretado" />
 
@@ -124,4 +134,17 @@
         android:layout_alignParentEnd="true"
         android:textColor="#fffefe"
         android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Eliminar"
+        android:id="@+id/textView5"
+        android:textStyle="bold"
+        android:textColor="#fffefe"
+        android:layout_marginTop="10dp"
+        android:layout_alignBottom="@+id/imageView2"
+        android:layout_alignLeft="@+id/imgEliminar"
+        android:layout_alignStart="@+id/imgEliminar" />
 </RelativeLayout>

@@ -1,16 +1,31 @@
 package com.example.leopasca.guemarapp;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.apache.http.client.methods.HttpPost;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 
 public class pruebaNotaVoz extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
@@ -18,6 +33,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
     private MediaRecorder recorder;
     String nombreNota;
     TextView txvAudio;
+    int IdNota;
     public void ObtenerReferencias()
     {
         txvAudio =(TextView)findViewById(R.id.txvAudio);
@@ -30,6 +46,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
         ObtenerReferencias();
         Bundle extras = getIntent().getExtras();
         nombreNota=extras.getString("Nombre");
+        IdNota =extras.getInt("IdNota");
         OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
         txvAudio.setText(nombreNota);
     }
@@ -80,6 +97,9 @@ public class pruebaNotaVoz extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 break;
+            case R.id.imgEliminar:
+                Eliminar();
+            break;
         }
     }
     private void beginRecording() throws Exception
@@ -140,5 +160,52 @@ public class pruebaNotaVoz extends AppCompatActivity {
         {
             mediaPlayer.stop();
         }
+    }
+    private void Eliminar()
+    {
+        Dialog dialogo = EliminarNota(IdNota);
+        dialogo.show();
+    }
+    private Dialog EliminarNota(final int idef) {
+
+        Log.e("GULE", "3");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Eliminar Nota de voz");
+        builder.setMessage("¿Esta seguro que quiere eliminar la Nota?");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                HttpPost post = new HttpPost();
+                post.setHeader("content-type", "application/json");
+
+                try {
+                    OkHttpClient client = new  OkHttpClient();
+                    String url ="http://leopashost.hol.es/bd/EliminarNota.php";
+                    JSONObject dato = new JSONObject();
+                    dato.put("IdNota", idef);
+
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    Log.d("Response", response.body().string());
+                }
+                catch (IOException |JSONException e) {
+                    Log.d("Error", e.getMessage());
+                }
+                File file = new File(OUTPUT_FILE);
+                file.delete();
+                finish();
+
+            }
+
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+        return builder.create();
     }
 }
