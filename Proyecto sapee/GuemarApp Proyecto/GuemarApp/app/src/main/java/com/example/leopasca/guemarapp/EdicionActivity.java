@@ -145,7 +145,6 @@ public class EdicionActivity extends AppCompatActivity
         imbResaltador = (ImageButton) findViewById(R.id.imbResaltador);
         layout = (RelativeLayout) findViewById(R.id.LayoutRelativo);
         imbComentarioHoja = (ImageButton) findViewById(R.id.imbComentarioHoja);
-        Pasar = (Button)findViewById(R.id.btnPasar);
         imbVideo =(ImageButton)findViewById(R.id.imbVideo);
         imbVoz = (ImageButton)findViewById(R.id.imbVoz);
         imbVideoHoja =(ImageButton)findViewById(R.id.imbVideoHoja);
@@ -186,20 +185,11 @@ public class EdicionActivity extends AppCompatActivity
         ListarNotas listarNotas = new ListarNotas();
         listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php");
         imbVideo.setOnClickListener(imbVideo_click);
-        Pasar.setOnClickListener(pasar);
         imbVoz.setOnClickListener(imbVoz_click);
 
 
     }
-    public View.OnClickListener pasar = new View.OnClickListener() {
 
-        @Override
-        public void onClick(View view) {
-
-            Intent elintent = new Intent(getApplicationContext(), pruebaNotaVoz.class);
-            startActivity(elintent);
-        }
-    };
 
     private View.OnClickListener imbComentario_click = new View.OnClickListener() {
         @Override

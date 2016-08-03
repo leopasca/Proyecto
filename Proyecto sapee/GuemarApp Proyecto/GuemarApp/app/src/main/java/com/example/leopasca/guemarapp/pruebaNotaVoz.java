@@ -2,6 +2,7 @@ package com.example.leopasca.guemarapp;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -196,6 +197,8 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 }
                 File file = new File(OUTPUT_FILE);
                 file.delete();
+                Intent intentAMain = new Intent(getApplicationContext(),EdicionActivity.class);
+                startActivity(intentAMain);
                 finish();
 
             }
