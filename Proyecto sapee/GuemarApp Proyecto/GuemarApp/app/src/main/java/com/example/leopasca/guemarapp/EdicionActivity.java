@@ -170,13 +170,7 @@ public class EdicionActivity extends AppCompatActivity
         lisvid = new ArrayList<>();
         lisnot = new ArrayList<>();
         pdfView.fromAsset("beitza.pdf").load();
-
         imbComentario.setOnClickListener(imbComentario_click);
-        if (ExisteImbBoton == true) {
-            imbComentarioHoja.setOnClickListener(imbComentarioHoja_click);
-            imbComentarioHoja.setOnLongClickListener(imbEliminar_click);
-
-        }
         //imbVideoHoja.setOnClickListener(imbVideoHoja_click);
         ProgressTask task = new ProgressTask();
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
@@ -855,12 +849,11 @@ public class EdicionActivity extends AppCompatActivity
             get.setHeader("content-type", "application/json");
             try {
                 OkHttpClient client = new  OkHttpClient();
-                String url ="http://leopashost.hol.es/bd/TraerUrl.php?IdVideo="+id;
+                String url ="http://www.leopashost.hol.es/bd/TraerUrl.php?IdVideo="+id;
                 JSONObject dato = new JSONObject();
                 dato.put("IdVideo",id);
                 Request request1 = new Request.Builder()
                         .url(url)
-                        .get()
                         .build();
                 Response response = client.newCall(request1).execute();
                String resp = response.body().string();
@@ -1263,8 +1256,6 @@ public class EdicionActivity extends AppCompatActivity
                     imgAsteriscoNota.setY(CordNotaAsteriscoYfloat);
                     MapIMGNota.put(idNota,imgAsteriscoNota);
                     layout.addView(imgAsteriscoNota);
-
-
                     imbBotonNota.setOnClickListener(imbNotaHoja_click);
                     imbBotonNota.setOnLongClickListener(imbEditaNota_click);
 

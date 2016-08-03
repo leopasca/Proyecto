@@ -3,6 +3,8 @@ package com.example.leopasca.guemarapp;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -50,6 +52,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
         IdNota =extras.getInt("IdNota");
         OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
         txvAudio.setText(nombreNota);
+        Bitmap bMap = BitmapFactory.decodeFile(OUTPUT_FILE);
     }
     public void butonApretado(View view)
     {
