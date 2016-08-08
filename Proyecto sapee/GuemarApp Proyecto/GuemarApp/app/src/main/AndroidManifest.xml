@@ -25,7 +25,8 @@
         </activity>
         <activity android:name=".videoPrueba"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name=".pruebaNotaVoz"></activity>
+        <activity android:name=".pruebaNotaVoz">
+        </activity>
     </application>
 
 </manifest>

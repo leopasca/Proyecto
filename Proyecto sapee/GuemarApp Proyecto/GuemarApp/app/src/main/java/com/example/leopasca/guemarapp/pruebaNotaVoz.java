@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 public class pruebaNotaVoz extends AppCompatActivity {
@@ -37,9 +39,12 @@ public class pruebaNotaVoz extends AppCompatActivity {
     String nombreNota;
     TextView txvAudio;
     int IdNota;
+    Button btnSubir;
     public void ObtenerReferencias()
     {
+
         txvAudio =(TextView)findViewById(R.id.txvAudio);
+        btnSubir=(Button)findViewById(R.id.btnSubir);
     }
 
     @Override
@@ -51,8 +56,10 @@ public class pruebaNotaVoz extends AppCompatActivity {
         nombreNota=extras.getString("Nombre");
         IdNota =extras.getInt("IdNota");
         OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
+
         txvAudio.setText(nombreNota);
-        Bitmap bMap = BitmapFactory.decodeFile(OUTPUT_FILE);
+
+        btnSubir.setOnClickListener(btnSubir_click);
     }
     public void butonApretado(View view)
     {
@@ -214,4 +221,21 @@ public class pruebaNotaVoz extends AppCompatActivity {
         });
         return builder.create();
     }
+    public View.OnClickListener btnSubir_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            FileInputStream fileInputStream=null;
+            File file = new File(OUTPUT_FILE);
+            byte[] bFile = new byte[(int)file.length()];
+            try {
+                fileInputStream = new FileInputStream(file);
+                fileInputStream.read(bFile);
+                fileInputStream.close();
+
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
 }
