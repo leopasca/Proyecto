@@ -40,11 +40,13 @@ public class pruebaNotaVoz extends AppCompatActivity {
     TextView txvAudio;
     int IdNota;
     Button btnSubir;
+    Button btnBajar;
     public void ObtenerReferencias()
     {
 
         txvAudio =(TextView)findViewById(R.id.txvAudio);
         btnSubir=(Button)findViewById(R.id.btnSubir);
+        btnBajar = (Button)findViewById(R.id.btnBajar);
     }
 
     @Override
@@ -60,6 +62,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
         txvAudio.setText(nombreNota);
 
         btnSubir.setOnClickListener(btnSubir_click);
+
     }
     public void butonApretado(View view)
     {
@@ -231,6 +234,22 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 fileInputStream = new FileInputStream(file);
                 fileInputStream.read(bFile);
                 fileInputStream.close();
+                HttpPost post = new HttpPost();
+                post.setHeader("content-type", "application/json");
+
+                    OkHttpClient client = new  OkHttpClient();
+                    String url ="http://leopashost.hol.es/bd/SubirNota.php";
+                    JSONObject dato = new JSONObject();
+                    dato.put("Nombre",nombreNota);
+                    dato.put("Nota",bFile);
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    String prueba = response.body().string();
+
 
             }
             catch(Exception e){

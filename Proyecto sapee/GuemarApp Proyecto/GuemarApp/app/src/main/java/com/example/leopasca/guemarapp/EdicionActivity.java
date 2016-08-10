@@ -182,6 +182,7 @@ public class EdicionActivity extends AppCompatActivity
         imbVoz.setOnClickListener(imbVoz_click);
 
 
+
     }
 
 
@@ -241,8 +242,8 @@ public class EdicionActivity extends AppCompatActivity
                 return false;
             } else {
 
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
+               /* switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:*/
                         x = event.getX();
                         y = event.getY();
                         String IdComentario="";
@@ -314,13 +315,12 @@ public class EdicionActivity extends AppCompatActivity
                         Log.e("error","7");
                         imbBoton.setOnClickListener(imbComentarioHoja_click);
                         imbBoton.setOnLongClickListener(imbEliminar_click);
-
                         Log.e("error","8");
-
+                        pdfView.loadPages();
                         ignore = true;
 
                 }
-            }
+            //}
             return true;
         }
 
