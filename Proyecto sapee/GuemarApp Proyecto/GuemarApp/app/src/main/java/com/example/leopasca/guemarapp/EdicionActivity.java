@@ -31,6 +31,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.Layout;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -180,8 +181,7 @@ public class EdicionActivity extends AppCompatActivity
         listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php");
         imbVideo.setOnClickListener(imbVideo_click);
         imbVoz.setOnClickListener(imbVoz_click);
-        pdfView.resetZoom();
-
+        int num = pdfView.getCurrentPage();
 
     }
 
