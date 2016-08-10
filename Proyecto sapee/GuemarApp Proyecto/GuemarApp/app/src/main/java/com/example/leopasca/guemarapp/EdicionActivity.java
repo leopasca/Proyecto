@@ -180,7 +180,7 @@ public class EdicionActivity extends AppCompatActivity
         listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php");
         imbVideo.setOnClickListener(imbVideo_click);
         imbVoz.setOnClickListener(imbVoz_click);
-
+        pdfView.resetZoom();
 
 
     }
