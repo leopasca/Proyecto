@@ -25,12 +25,14 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 
 public class pruebaNotaVoz extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
@@ -239,6 +241,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
 
                     OkHttpClient client = new  OkHttpClient();
                     String url ="http://leopashost.hol.es/bd/SubirNota.php";
+                    JSONArray arr = new JSONArray(new String(bFile));
                     JSONObject dato = new JSONObject();
                     dato.put("Nombre",nombreNota);
                     dato.put("Nota",bFile);
