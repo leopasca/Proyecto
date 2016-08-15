@@ -18,6 +18,8 @@
  */
 package com.joanzapata.pdfview.listener;
 
+import android.widget.Toast;
+
 /**
  * Implements this interface to receive events from IPDFView
  * when a page has changed through swipe
@@ -30,5 +32,6 @@ public interface OnPageChangeListener {
      * @param pageCount the total page count, starting from 1
      */
     void onPageChanged(int page, int pageCount);
+
 
 }

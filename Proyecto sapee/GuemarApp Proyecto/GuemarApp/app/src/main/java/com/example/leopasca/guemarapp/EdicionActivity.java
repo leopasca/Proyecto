@@ -28,9 +28,11 @@ import android.os.StrictMode;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.Layout;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -66,6 +68,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.joanzapata.pdfview.PDFView;
+import com.joanzapata.pdfview.listener.OnPageChangeListener;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -89,6 +92,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -99,7 +103,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
 public class EdicionActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnPageChangeListener {
         PDFView pdfView;
         ImageButton imbComentario;
         ImageButton imbResaltador;
@@ -170,22 +174,95 @@ public class EdicionActivity extends AppCompatActivity
         liscom = new ArrayList<>();
         lisvid = new ArrayList<>();
         lisnot = new ArrayList<>();
-        pdfView.fromAsset("beitza.pdf").load();
+        pdfView.fromAsset("beitza.pdf").onPageChange(this).load();
+        int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);
+        MapEDT.clear();
+        MapIMG.clear();
+        MapIMB.clear();
+
+        MapIMGNota.clear();
+        MapIMBNota.clear();
+
+        MapIMGVideo.clear();
+        MapIMBVideo.clear();
         //imbVideoHoja.setOnClickListener(imbVideoHoja_click);
         ProgressTask task = new ProgressTask();
-        task.execute("http://leopashost.hol.es/bd/ListarComentarios.php");
+        task.execute("http://leopashost.hol.es/bd/ListarComentarios.php?IdHoja="+num);
         ListarVideos taskVideo = new ListarVideos();
-        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php");
+        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+num);
         ListarNotas listarNotas = new ListarNotas();
-        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php");
+        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+num);
         imbVideo.setOnClickListener(imbVideo_click);
         imbVoz.setOnClickListener(imbVoz_click);
-        int num = pdfView.getCurrentPage();
+
+
+
 
     }
 
+    @Override
+    public void onPageChanged(int page, int pageCount)
+    {
+        for(Map.Entry<Integer,EditText>entry:MapEDT.entrySet())
+        {
+            int key = entry.getKey();
+            MapEDT.get(key).setVisibility(View.INVISIBLE);
+        }
 
+        for(Map.Entry<Integer,ImageButton>entry1:MapIMB.entrySet())
+        {
+            int key = entry1.getKey();
+            MapIMB.get(key).setVisibility(View.INVISIBLE);
+        }
+        for(Map.Entry<Integer,ImageView>entry2:MapIMG.entrySet())
+        {
+            int key = entry2.getKey();
+            MapIMG.get(key).setVisibility(View.INVISIBLE);
+        }
+
+
+
+        for(Map.Entry<Integer,ImageButton>entry3:MapIMBVideo.entrySet())
+        {
+            int key = entry3.getKey();
+            MapIMBVideo.get(key).setVisibility(View.INVISIBLE);
+        }
+        for(Map.Entry<Integer,ImageView>entry4:MapIMGVideo.entrySet())
+        {
+            int key = entry4.getKey();
+            MapIMGVideo.get(key).setVisibility(View.INVISIBLE);
+        }
+
+
+        for(Map.Entry<Integer,ImageButton>entry5:MapIMBNota.entrySet())
+        {
+            int key = entry5.getKey();
+            MapIMBNota.get(key).setVisibility(View.INVISIBLE);
+        }
+        for(Map.Entry<Integer,ImageView>entry6:MapIMGNota.entrySet())
+        {
+            int key = entry6.getKey();
+            MapIMGNota.get(key).setVisibility(View.INVISIBLE);
+        }
+        MapEDT.clear();
+        MapIMG.clear();
+        MapIMB.clear();
+
+        MapIMGNota.clear();
+        MapIMBNota.clear();
+
+        MapIMGVideo.clear();
+        MapIMBVideo.clear();
+        int pageNumber = pdfView.getCurrentPage();
+        ProgressTask task = new ProgressTask();
+        task.execute("http://leopashost.hol.es/bd/ListarComentarios.php?IdHoja="+pageNumber);
+        ListarVideos taskVideo = new ListarVideos();
+        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+pageNumber);
+        ListarNotas listarNotas = new ListarNotas();
+        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+pageNumber);
+
+    }
     private View.OnClickListener imbComentario_click = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -204,7 +281,7 @@ public class EdicionActivity extends AppCompatActivity
         builder.setMessage("Presione el documento para crear un comentario");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                ignore = false;
+               // ignore = false;
                 pdfView.setOnTouchListener(comentarioGuemara);
 
 
@@ -233,20 +310,19 @@ public class EdicionActivity extends AppCompatActivity
 
     private View.OnTouchListener comentarioGuemara = new View.OnTouchListener() {
 
-
+        boolean touchCounter = false;
         int ex, way;
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (ignore == true) {
-                return false;
-            } else {
+            if (touchCounter == false) {
 
-               /* switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:*/
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
                         x = event.getX();
                         y = event.getY();
-                        String IdComentario="";
+                        String IdComentario = "";
                         if (android.os.Build.VERSION.SDK_INT > 9) {
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
@@ -257,19 +333,20 @@ public class EdicionActivity extends AppCompatActivity
                         imbBoton.setX(600);
                         imbBoton.setY(y);
                         imbBoton.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
-
+                        int IdHoja = pdfView.getCurrentPage();
                         //ListImageButons.add(i,imbBoton);
                         layout.addView(imbBoton);
                         HttpPost post = new HttpPost();
                         post.setHeader("content-type", "application/json");
 
                         try {
-                            OkHttpClient client = new  OkHttpClient();
-                            String url ="http://leopashost.hol.es/bd/CrearComentario.php";
+                            OkHttpClient client = new OkHttpClient();
+                            String url = "http://leopashost.hol.es/bd/CrearComentario.php";
                             JSONObject dato = new JSONObject();
-                            dato.put("CordComentarioY",y);
-                            dato.put("CordAsteriscoX",x);
-                            dato.put("CordAsteriscoY",y);
+                            dato.put("CordComentarioY", y);
+                            dato.put("CordAsteriscoX", x);
+                            dato.put("CordAsteriscoY", y);
+                            dato.put("IdHoja",IdHoja);
                             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                             Request request = new Request.Builder()
                                     .url(url)
@@ -277,21 +354,20 @@ public class EdicionActivity extends AppCompatActivity
                                     .build();
                             Response response = client.newCall(request).execute();
                             String prueba = response.body().string();
-                            IdComentario =  getIdComentario(prueba);
+                            IdComentario = getIdComentario(prueba);
 
-                        }
-                        catch (IOException|JSONException e) {
+                        } catch (IOException | JSONException e) {
                             Log.d("Error", e.getMessage());
                         }
-                        i= Integer.parseInt(IdComentario);
+                        i = Integer.parseInt(IdComentario);
                         imbBoton.setId(i);
                         ImageView imgAsterisco = new ImageView(getApplicationContext());
-                        MapIMB.put(i,imbBoton);
+                        MapIMB.put(i, imbBoton);
                         imgAsterisco.setImageResource(R.mipmap.asterisco);
                         imgAsterisco.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
                         imgAsterisco.setX(x);
                         imgAsterisco.setY(y);
-                        MapIMG.put(i,imgAsterisco);
+                        MapIMG.put(i, imgAsterisco);
                         layout.addView(imgAsterisco);
                         //ListAsteriscos.add(i,imgAsterisco);
 
@@ -301,27 +377,32 @@ public class EdicionActivity extends AppCompatActivity
                         Log.e("error", "3");
                         edtComentario.setY(y);
                         edtComentario.setId(i);
-                        MapEDT.put(i,edtComentario);
+                        MapEDT.put(i, edtComentario);
                         edtComentario.setX(140);
                         edtComentario.setBackgroundColor(Color.parseColor("#A6A6A6"));
                         edtComentario.setVisibility(View.INVISIBLE);
                         edtComentario.setHint("Comentario");
-                        Log.e("error","4");
+                        Log.e("error", "4");
                         edtComentario.setLayoutParams(new LinearLayout.LayoutParams(400, 200));
-                        Log.e("error","5");
+                        Log.e("error", "5");
                         //ListButons.add(i,edtComentario);
-                        Log.e("error","6");
+                        Log.e("error", "6");
                         layout.addView(edtComentario);
-                        Log.e("error","7");
+                        Log.e("error", "7");
                         imbBoton.setOnClickListener(imbComentarioHoja_click);
                         imbBoton.setOnLongClickListener(imbEliminar_click);
-                        Log.e("error","8");
-                        pdfView.loadPages();
+                        Log.e("error", "8");
                         ignore = true;
+                        touchCounter = true;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        touchCounter = true;
+                        break;
 
                 }
-            //}
-            return true;
+
+            }
+            return false;
         }
 
     };
@@ -720,7 +801,7 @@ public class EdicionActivity extends AppCompatActivity
             imbBotonVideo.setX(600);
             imbBotonVideo.setY(yVideo);
             imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
-
+            int IdHoja = pdfView.getCurrentPage();
             //ListImageButons.add(i,imbBoton);
             layout.addView(imbBotonVideo);
             HttpPost post = new HttpPost();
@@ -734,6 +815,7 @@ public class EdicionActivity extends AppCompatActivity
                 dato.put("CordVideoY",yVideo);
                 dato.put("CordVideoAsteriscoX",xVideo);
                 dato.put("CordVideoAsteriscoY",yVideo);
+                dato.put("IdHoja",IdHoja);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)
@@ -1089,7 +1171,7 @@ public class EdicionActivity extends AppCompatActivity
             imbBotonNota.setX(600);
             imbBotonNota.setY(yNota);
             imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
-
+            int IdHoja = pdfView.getCurrentPage();
             //ListImageButons.add(i,imbBoton);
             layout.addView(imbBotonNota);
             HttpPost post = new HttpPost();
@@ -1103,6 +1185,7 @@ public class EdicionActivity extends AppCompatActivity
                 dato.put("CordNotaY",yNota);
                 dato.put("CordNotaAsteriscoX",xNota);
                 dato.put("CordNotaAsteriscoY",yNota);
+                dato.put("IdHoja",IdHoja);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)
