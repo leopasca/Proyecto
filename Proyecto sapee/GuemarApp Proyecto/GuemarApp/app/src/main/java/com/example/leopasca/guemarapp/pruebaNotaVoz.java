@@ -232,7 +232,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
         public void onClick(View v) {
             FileInputStream fileInputStream=null;
             File file = new File(OUTPUT_FILE);
-            byte[] bFile = new byte[(int)file.length()];
+            byte[] bFile = new byte [(int)file.length()];
             try {
                 fileInputStream = new FileInputStream(file);
                 fileInputStream.read(bFile);
@@ -242,12 +242,9 @@ public class pruebaNotaVoz extends AppCompatActivity {
 
                     OkHttpClient client = new  OkHttpClient();
                     String url ="http://leopashost.hol.es/bd/SubirNota.php";
-                    Blob blob = null;
-                    blob.setBytes(1, bFile);
-                    JSONArray arr = new JSONArray(new String(bFile));
                     JSONObject dato = new JSONObject();
                     dato.put("Nombre",nombreNota);
-                    dato.put("Nota",blob);
+                    dato.put("Nota",bFile);
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                     Request request = new Request.Builder()
                             .url(url)
