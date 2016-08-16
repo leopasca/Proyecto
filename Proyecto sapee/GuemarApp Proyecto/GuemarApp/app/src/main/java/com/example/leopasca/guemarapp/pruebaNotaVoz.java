@@ -5,8 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +16,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +39,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
 
 public class pruebaNotaVoz extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
@@ -230,9 +237,28 @@ public class pruebaNotaVoz extends AppCompatActivity {
     public View.OnClickListener btnSubir_click = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            SubirNota subir = new SubirNota();
+            subir.execute("http://leopashost.hol.es/bd/SubirNota.php");
+        }
+    };
+    class SubirNota extends AsyncTask<String,Void, String> {
+
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(null);
+            Toast.makeText(pruebaNotaVoz.this, listo, Toast.LENGTH_SHORT).show();
+
+        }
+        List<Comentario> listson = new ArrayList<Comentario>();
+
+        @Override
+        protected String doInBackground(String...params) {
+            String url = params[0];
             FileInputStream fileInputStream=null;
             File file = new File(OUTPUT_FILE);
             byte[] bFile = new byte [(int)file.length()];
+            byte [] bPrueba = new byte[1];
+            bPrueba[0] =0;
             try {
                 fileInputStream = new FileInputStream(file);
                 fileInputStream.read(bFile);
@@ -240,24 +266,25 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 HttpPost post = new HttpPost();
                 post.setHeader("content-type", "application/json");
 
-                    OkHttpClient client = new  OkHttpClient();
-                    String url ="http://leopashost.hol.es/bd/SubirNota.php";
-                    JSONObject dato = new JSONObject();
-                    dato.put("Nombre",nombreNota);
-                    dato.put("Nota",bFile);
-                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(body)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String prueba = response.body().string();
+                OkHttpClient client = new  OkHttpClient();
+                JSONObject dato = new JSONObject();
+                dato.put("Nombre",nombreNota);
+                dato.put("Nota",bPrueba);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                String prueba = response.body().string();
 
 
             }
-            catch(Exception e){
+            catch(Exception e) {
                 e.printStackTrace();
             }
+            return "Listo";
         }
-    };
+
+    }
 }

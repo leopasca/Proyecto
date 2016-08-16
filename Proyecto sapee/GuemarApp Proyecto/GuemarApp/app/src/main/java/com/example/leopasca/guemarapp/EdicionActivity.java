@@ -186,9 +186,9 @@ public class EdicionActivity extends AppCompatActivity
         ListarVideos taskVideo = new ListarVideos();
         taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+num);
         ListarNotas listarNotas = new ListarNotas();
-        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+num);
+        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+num);*/
         imbVideo.setOnClickListener(imbVideo_click);
-        imbVoz.setOnClickListener(imbVoz_click);*/
+        imbVoz.setOnClickListener(imbVoz_click);
 
 
 
