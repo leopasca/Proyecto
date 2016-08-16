@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.Blob;
 
 public class pruebaNotaVoz extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
@@ -241,10 +242,12 @@ public class pruebaNotaVoz extends AppCompatActivity {
 
                     OkHttpClient client = new  OkHttpClient();
                     String url ="http://leopashost.hol.es/bd/SubirNota.php";
+                    Blob blob = null;
+                    blob.setBytes(1, bFile);
                     JSONArray arr = new JSONArray(new String(bFile));
                     JSONObject dato = new JSONObject();
                     dato.put("Nombre",nombreNota);
-                    dato.put("Nota",bFile);
+                    dato.put("Nota",blob);
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                     Request request = new Request.Builder()
                             .url(url)

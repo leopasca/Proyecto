@@ -177,24 +177,18 @@ public class EdicionActivity extends AppCompatActivity
         pdfView.fromAsset("beitza.pdf").onPageChange(this).load();
         int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);
-        MapEDT.clear();
-        MapIMG.clear();
-        MapIMB.clear();
 
-        MapIMGNota.clear();
-        MapIMBNota.clear();
 
-        MapIMGVideo.clear();
-        MapIMBVideo.clear();
+
         //imbVideoHoja.setOnClickListener(imbVideoHoja_click);
-        ProgressTask task = new ProgressTask();
+       /*ProgressTask task = new ProgressTask();
         task.execute("http://leopashost.hol.es/bd/ListarComentarios.php?IdHoja="+num);
         ListarVideos taskVideo = new ListarVideos();
         taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+num);
         ListarNotas listarNotas = new ListarNotas();
         listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+num);
         imbVideo.setOnClickListener(imbVideo_click);
-        imbVoz.setOnClickListener(imbVoz_click);
+        imbVoz.setOnClickListener(imbVoz_click);*/
 
 
 
