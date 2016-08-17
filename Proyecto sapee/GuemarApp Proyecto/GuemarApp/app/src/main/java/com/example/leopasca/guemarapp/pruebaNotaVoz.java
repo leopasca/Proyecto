@@ -50,13 +50,12 @@ public class pruebaNotaVoz extends AppCompatActivity {
     TextView txvAudio;
     int IdNota;
     Button btnSubir;
-    Button btnBajar;
     public void ObtenerReferencias()
     {
 
         txvAudio =(TextView)findViewById(R.id.txvAudio);
         btnSubir=(Button)findViewById(R.id.btnSubir);
-        btnBajar = (Button)findViewById(R.id.btnBajar);
+
     }
 
     @Override
@@ -82,6 +81,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 try
                 {
                     beginRecording();
+                    Toast.makeText(pruebaNotaVoz.this, "Grabando. Para terminar ingrese Parar", Toast.LENGTH_LONG).show();
                 }
                 catch (Exception e)
                 {
@@ -93,6 +93,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 try
                 {
                     stopnRecording();
+                    Toast.makeText(pruebaNotaVoz.this, "Nota finalizada", Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e)
                 {
@@ -104,6 +105,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 try
                 {
                     playRecording();
+                    Toast.makeText(pruebaNotaVoz.this, "Reproduciendo", Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e)
                 {
@@ -115,6 +117,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 try
                 {
                     pauseRecording();
+                    Toast.makeText(pruebaNotaVoz.this, "Reproduccion finalizada", Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e)
                 {

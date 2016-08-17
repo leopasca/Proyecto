@@ -86,6 +86,8 @@ import org.json.JSONObject;
 import org.vudroid.pdfdroid.codec.PdfContext;
 import org.vudroid.pdfdroid.codec.PdfPage;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -1418,61 +1420,5 @@ public class EdicionActivity extends AppCompatActivity
             return true;
         }
     };
-    /*PARTE RESALTAR
-
-    private void setupDrawing()
-    {
-        drawPath = new Path();
-        drawPaint = new Paint();
-        drawPaint.setColor(paintColor);
-        drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(10);
-        drawPaint.setStyle(Paint.Style.STROKE);
-        drawPaint.setStrokeJoin(Paint.Join.ROUND);
-        drawPaint.setStrokeCap(Paint.Cap.ROUND);
-        canvasPaint = new Paint(Paint.SUBPIXEL_TEXT_FLAG);
-
-
-    }
-   /* @Override
-    protected void onSizeChanged(int w, int h, int oldv, int oldh)
-    {
-        super.onSizeChanged(w,h,oldv,oldh);
-    }
-    protected void OnDraw(Canvas canvas)
-    {
-        canvas.drawBitmap(canvasBitmap,0,0,canvasPaint);
-        canvas.drawPath(drawPath,drawPaint);
-    }
-    private View.OnTouchListener Resaltar = new View.OnTouchListener() {
-
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-
-            float touchx = event.getX();
-            float touchy = event.getY();
-            switch(event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    drawPath.moveTo(touchx,touchy);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    drawPath.lineTo(touchx,touchy);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    drawPath.lineTo(touchx,touchy);
-                    drawCanvas.drawPath(drawPath, drawPaint);
-                    drawPath.reset();
-                    break;
-                default:
-                    return false;
-
-            }
-            v.invalidate();
-            return true;
-
-        }
-
-
-    };*/
+    
 }
