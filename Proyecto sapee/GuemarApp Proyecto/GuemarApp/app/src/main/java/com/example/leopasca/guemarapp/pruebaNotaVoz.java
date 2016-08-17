@@ -34,8 +34,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.sql.Blob;
@@ -264,15 +267,14 @@ public class pruebaNotaVoz extends AppCompatActivity {
             bPrueba[0] =0;
             try {
                 fileInputStream = new FileInputStream(file);
-                fileInputStream.read(bFile);
+                fileInputStream.read (bFile);
                 fileInputStream.close();
                 HttpPost post = new HttpPost();
                 post.setHeader("content-type", "application/json");
-
                 OkHttpClient client = new  OkHttpClient();
                 JSONObject dato = new JSONObject();
                 dato.put("Nombre",nombreNota);
-                dato.put("Nota",bPrueba);
+                dato.put("Nota",bFile);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)

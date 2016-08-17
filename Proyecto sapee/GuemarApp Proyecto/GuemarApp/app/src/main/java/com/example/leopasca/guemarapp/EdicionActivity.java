@@ -1213,6 +1213,7 @@ public class EdicionActivity extends AppCompatActivity
             Intent intentANota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
             intentANota.putExtra("Nombre",nombre);
             startActivity(intentANota);
+
         }
         protected String doInBackground(String...params) {
             String nombreNota = params[0];
@@ -1417,6 +1418,7 @@ public class EdicionActivity extends AppCompatActivity
             intentAPruebaNota.putExtra("Nombre",Nombre);
             intentAPruebaNota.putExtra("IdNota",id);
             startActivity(intentAPruebaNota);
+            finish();
             return true;
         }
     };
