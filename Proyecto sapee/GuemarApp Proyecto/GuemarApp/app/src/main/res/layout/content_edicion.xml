@@ -13,7 +13,12 @@
     tools:showIn="@layout/app_bar_edicion"
     android:background="#59a1a4"
     android:id="@+id/LayoutRelativo">
-
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <!-- Put what you want as your normal screen in here, you can also choose for a linear layout or any other layout, whatever you prefer -->
+    </FrameLayout>
     <com.joanzapata.pdfview.PDFView
         android:id="@+id/pdfview"
         android:layout_width="match_parent"

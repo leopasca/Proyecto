@@ -620,6 +620,7 @@ public class EdicionActivity extends AppCompatActivity
 
         if (id == R.id.Menu) {
 
+
         } else if (id == R.id.Amigos) {
 
         } else if (id == R.id.Grupos) {
@@ -634,6 +635,12 @@ public class EdicionActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public View.OnClickListener btnMenu = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(EdicionActivity.this, "menu", Toast.LENGTH_SHORT).show();
+        }
+    };
    public View.OnClickListener imbVideo_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
