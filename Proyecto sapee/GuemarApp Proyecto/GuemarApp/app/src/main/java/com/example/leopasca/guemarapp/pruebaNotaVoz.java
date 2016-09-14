@@ -41,6 +41,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
@@ -269,12 +270,13 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 fileInputStream = new FileInputStream(file);
                 fileInputStream.read (bFile);
                 fileInputStream.close();
+                String myString = new String(bFile,"UTF-8");
                 HttpPost post = new HttpPost();
                 post.setHeader("content-type", "application/json");
                 OkHttpClient client = new  OkHttpClient();
                 JSONObject dato = new JSONObject();
                 dato.put("Nombre",nombreNota);
-                dato.put("Nota",bFile);
+                dato.put("Nota",myString);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)

@@ -32,7 +32,9 @@
             android:name=".videoPrueba"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".pruebaNotaVoz" />
-        <activity android:name=".LogActivity"></activity>
+        <activity android:name=".LogActivity" />
+        <activity android:name=".SplashActivity" />
+        <activity android:name=".PruebaBajarNota"></activity>
     </application>
 
 </manifest>

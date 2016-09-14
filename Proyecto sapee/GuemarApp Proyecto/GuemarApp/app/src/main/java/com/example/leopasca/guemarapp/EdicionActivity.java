@@ -619,7 +619,8 @@ public class EdicionActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.Menu) {
-
+            Intent intent = new Intent(getApplicationContext(),PruebaBajarNota.class);
+            startActivity(intent);
 
         } else if (id == R.id.Amigos) {
 
@@ -1425,7 +1426,7 @@ public class EdicionActivity extends AppCompatActivity
             intentAPruebaNota.putExtra("Nombre",Nombre);
             intentAPruebaNota.putExtra("IdNota",id);
             startActivity(intentAPruebaNota);
-            finish();
+
             return true;
         }
     };
