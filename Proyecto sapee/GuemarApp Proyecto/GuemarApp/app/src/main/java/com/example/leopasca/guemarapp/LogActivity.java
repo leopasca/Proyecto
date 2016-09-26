@@ -69,7 +69,7 @@ public class LogActivity extends AppCompatActivity {
             {
                 EmailIngresado = edtUsuario.getText().toString();
                 ContraseñaIngresada = edtPass.getText().toString();
-                TraerUsuarios taskUsuarios = new TraerUsuarios(getApplicationContext());
+                TraerUsuarios taskUsuarios = new TraerUsuarios();
                 taskUsuarios.execute("http://leopashost.hol.es/bd/TraerUsuarios.php");
             }
             else
@@ -80,13 +80,13 @@ public class LogActivity extends AppCompatActivity {
     };
     class TraerUsuarios extends AsyncTask<String,Void, List<Usuario>> {
         private OkHttpClient client = new OkHttpClient();
-        private ProgressDialog pdia;
-        public Context context;
-        public TraerUsuarios(Context activity)
+       // private ProgressDialog pdia;
+       // public Context context;
+        /*public TraerUsuarios(Context activity)
         {
             context = activity;
             pdia = new ProgressDialog(context);
-        }
+        }*/
 
       /*  protected void onPreExecute(){
             this.pdia.setMessage("Cargando...");
@@ -113,9 +113,9 @@ public class LogActivity extends AppCompatActivity {
                     Nombre = usuario.Nombre;
                     if(UsuarioBase.contentEquals(EmailIngresado)&& ContraseñaIngresada.contentEquals(ContraseñaBasee))
                     {
-                        if(pdia.isShowing()) {
+                        /*if(pdia.isShowing()) {
                             pdia.dismiss();
-                        }
+                        }*/
                         Intent intentAEdicion = new Intent(getApplicationContext(),EdicionActivity.class);
                         startActivity(intentAEdicion);
                     }

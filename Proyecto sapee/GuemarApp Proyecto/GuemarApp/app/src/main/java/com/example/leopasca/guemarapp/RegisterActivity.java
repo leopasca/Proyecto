@@ -26,14 +26,16 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnRegistrar;
     EditText edtUsuarioReg;
     EditText edtPassReg;
-    EditText edtNombre;
+    EditText edtNombreReg;
     TextView txvIngresar;
+    String UsuarioReg="",Contraseña="",Nombre ="";
     public void ObtenerReferencias()
     {
         btnRegistrar =(Button)findViewById(R.id.btnRegistrar);
         edtUsuarioReg = (EditText)findViewById(R.id.edtUsuarioReg);
         edtPassReg = (EditText)findViewById(R.id.edtPassReg);
         txvIngresar = (TextView)findViewById(R.id.txvIngresarCuenta);
+        edtNombreReg = (EditText)findViewById(R.id.edtNombre);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,27 +55,27 @@ public class RegisterActivity extends AppCompatActivity {
     public View.OnClickListener registrar = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          if(!edtPassReg.getText().toString().isEmpty()||!edtUsuarioReg.getText().toString().isEmpty()||!edtNombre.getText().toString().isEmpty())
+          if(!edtPassReg.getText().toString().isEmpty()||!edtUsuarioReg.getText().toString().isEmpty()||!edtNombreReg.getText().toString().isEmpty())
           {
               HttpPost post = new HttpPost();
               post.setHeader("content-type", "application/json");
-              String Usuario = edtUsuarioReg.getText().toString();
-              String Contraseña = edtPassReg.getText().toString();
-              String Nombre = edtNombre.getText().toString();
+               UsuarioReg= edtUsuarioReg.getText().toString();
+               Contraseña = edtPassReg.getText().toString();
+               Nombre = edtNombreReg.getText().toString();
               try {
                   OkHttpClient client = new  OkHttpClient();
-                  String url ="http://leopashost.hol.es/bd/CrearUsuario.php";
+                  String urlReg ="http://leopashost.hol.es/bd/CrearUsuario.php";
                   JSONObject dato = new JSONObject();
-                  dato.put("Email", Usuario);
+                  dato.put("Email", UsuarioReg);
                   dato.put("Contraseña",Contraseña);
                   dato.put("Nombre",Nombre);
                   RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                   Request request = new Request.Builder()
-                          .url(url)
+                          .url(urlReg)
                           .post(body)
                           .build();
                   Response response = client.newCall(request).execute();
-                  Log.d("Response", response.body().string());
+                  //Log.d("Response", response.body().string());
               }
               catch (IOException |JSONException e) {
                   Log.d("Error", e.getMessage());
