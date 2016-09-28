@@ -1,6 +1,8 @@
 package com.example.leopasca.guemarapp;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -244,15 +246,31 @@ public class pruebaNotaVoz extends AppCompatActivity {
     public View.OnClickListener btnSubir_click = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            SubirNota subir = new SubirNota();
+            SubirNota subir = new SubirNota(pruebaNotaVoz.this);
             subir.execute("http://leopashost.hol.es/bd/SubirNota.php");
         }
     };
     class SubirNota extends AsyncTask<String,Void, String> {
 
+        private ProgressDialog pdia;
+        public Context context;
+        public SubirNota(Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+
+        protected void onPreExecute(){
+            this.pdia.setMessage("Cargando...");
+            this.pdia.show();
+        }
         @Override
         protected void onPostExecute(String listo) {
             super.onPostExecute(null);
+            if (pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
             Toast.makeText(pruebaNotaVoz.this, listo, Toast.LENGTH_SHORT).show();
 
         }

@@ -56,11 +56,10 @@ public class LogActivity extends AppCompatActivity {
         btnIngresar.setOnClickListener(ingresar_click);
         txvCrearCuenta.setOnClickListener(crearCuenta);
         listUs = new ArrayList<>();
-        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Usuario = prefs.getString("Usuario","");
         Password = prefs.getString("Password","");
         sesion = prefs.getBoolean("sesion",false);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Toast.makeText(LogActivity.this, Usuario, Toast.LENGTH_SHORT).show();
         if(sesion)
         {
@@ -136,14 +135,14 @@ public class LogActivity extends AppCompatActivity {
                             pdia.dismiss();
                         }
                         existe =true;
-                        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString("Usuario",UsuarioBase);
                         editor.putString("Password",ContraseñaBasee);
                         editor.putBoolean("sesion",true);
                         editor.putString("Nombre",Nombre);
+                        editor.putInt("IdUsuario",IdUsuario);
                         editor.commit();
-
                         Intent intentAEdicion = new Intent(getApplicationContext(),EdicionActivity.class);
                         startActivity(intentAEdicion);
                     }

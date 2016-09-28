@@ -144,6 +144,7 @@ public class EdicionActivity extends AppCompatActivity
         private Bitmap canvasBitmap;
         private MediaPlayer mediaPlayer;
         private String OUTPUT_FILE;
+        private String NombreNota="";
 
 
 
@@ -182,8 +183,7 @@ public class EdicionActivity extends AppCompatActivity
         pdfView.fromAsset("beitza.pdf").onPageChange(this).load();
         int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);
-        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String Nombre = prefs.getString("Nombre","");
         Toast.makeText(EdicionActivity.this, "El nombre del usuario es "+Nombre, Toast.LENGTH_SHORT).show();
 
@@ -330,7 +330,8 @@ public class EdicionActivity extends AppCompatActivity
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
                         }
-
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        int IdUsuario = prefs.getInt("IdUsuario",0);
                         ImageButton imbBoton = new ImageButton(getApplicationContext());
                         imbBoton.setImageResource(R.mipmap.comentario_hoja);
                         imbBoton.setX(600);
@@ -350,6 +351,7 @@ public class EdicionActivity extends AppCompatActivity
                             dato.put("CordAsteriscoX", x);
                             dato.put("CordAsteriscoY", y);
                             dato.put("IdHoja",IdHoja);
+                            dato.put("IdUsuario",IdUsuario);
                             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                             Request request = new Request.Builder()
                                     .url(url)
@@ -650,11 +652,41 @@ public class EdicionActivity extends AppCompatActivity
 
         } else if (id == R.id.Cerrar) {
 
+            CerrarSesion();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public void CerrarSesion()
+    {
+        Dialog dialogo = dialogoCerrarSesion();
+        dialogo.show();
+    }
+    public Dialog dialogoCerrarSesion()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cerrar Sesión");
+        builder.setMessage("¿Esta seguro que quiere cerrar sesión?");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("sesion",false);
+                editor.commit();
+                Intent intentaLog = new Intent(getApplicationContext(),LogActivity.class);
+                startActivity(intentaLog);
+                finish();
+            }
+
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+        return builder.create();
     }
     public View.OnClickListener btnMenu = new View.OnClickListener() {
         @Override
@@ -819,6 +851,8 @@ public class EdicionActivity extends AppCompatActivity
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
             }
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
 
             ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
             imbBotonVideo.setImageResource(R.mipmap.video_hoja);
@@ -839,6 +873,7 @@ public class EdicionActivity extends AppCompatActivity
                 dato.put("CordVideoY",yVideo);
                 dato.put("CordVideoAsteriscoX",xVideo);
                 dato.put("CordVideoAsteriscoY",yVideo);
+                dato.put("IdUsuario",IdUsuario);
                 dato.put("IdHoja",IdHoja);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
@@ -1224,6 +1259,8 @@ public class EdicionActivity extends AppCompatActivity
             imbBotonNota.setY(yNota);
             imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
             int IdHoja = pdfView.getCurrentPage();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
             //ListImageButons.add(i,imbBoton);
             layout.addView(imbBotonNota);
             HttpPost post = new HttpPost();
@@ -1238,6 +1275,7 @@ public class EdicionActivity extends AppCompatActivity
                 dato.put("CordNotaAsteriscoX",xNota);
                 dato.put("CordNotaAsteriscoY",yNota);
                 dato.put("IdHoja",IdHoja);
+                dato.put("IdUsuario",IdUsuario);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)
@@ -1295,28 +1333,19 @@ public class EdicionActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            String Nombre ="";
+            imbNotahojaTk notahoja = new imbNotahojaTk();
+            notahoja.execute(id);
 
-            HttpGet get = new HttpGet();
-            get.setHeader("content-type", "application/json");
-            try {
-                OkHttpClient client = new  OkHttpClient();
-                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+id;
-                JSONObject dato = new JSONObject();
-                dato.put("IdNota",id);
-                Request request = new Request.Builder()
-                        .url(url)
-                        .get()
-                        .build();
-                Response response = client.newCall(request).execute();
-                String resp = response.body().string();
-                Nombre = getNombreNota(resp);
-                Log.d("url", response.body().string());
-            }
-            catch (IOException|JSONException e) {
-                Log.d("Error", e.getMessage());
-            }
-            OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+Nombre+".3gpp";
+        }
+    };
+    class imbNotahojaTk extends AsyncTask<Integer,Void,String>
+    {
+
+        Integer idef;
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+NombreNota+".3gpp";
             try
             {
                 playRecording();
@@ -1325,8 +1354,34 @@ public class EdicionActivity extends AppCompatActivity
             {
                 e.printStackTrace();
             }
+
         }
-    };
+        protected String doInBackground(Integer...params) {
+            idef = params[0];
+
+            HttpGet get = new HttpGet();
+            get.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+idef;
+                JSONObject dato = new JSONObject();
+                dato.put("IdNota",idef);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .build();
+                Response response = client.newCall(request).execute();
+                String resp = response.body().string();
+                NombreNota = getNombreNota(resp);
+                Log.d("url", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "listo";
+        }
+    }
+
     private void playRecording() throws Exception
     {
         mediaPlayer = new MediaPlayer();
@@ -1451,8 +1506,6 @@ public class EdicionActivity extends AppCompatActivity
             int id = v.getId();
            imbEditaNotaTk editanota = new imbEditaNotaTk();
             editanota.execute(id);
-
-
             return true;
         }
     };
