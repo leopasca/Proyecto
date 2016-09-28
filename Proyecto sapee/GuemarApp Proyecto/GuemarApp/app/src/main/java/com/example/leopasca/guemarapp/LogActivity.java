@@ -3,8 +3,10 @@ package com.example.leopasca.guemarapp;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +39,8 @@ public class LogActivity extends AppCompatActivity {
     String EmailIngresado ="";
     String ContraseñaIngresada="";
     TextView txvCrearCuenta;
+    String Usuario,Password;
+    Boolean sesion;
     public void ObtenerReferencias()
     {
         btnIngresar =(Button)findViewById(R.id.btnIngresar);
@@ -52,16 +56,30 @@ public class LogActivity extends AppCompatActivity {
         btnIngresar.setOnClickListener(ingresar_click);
         txvCrearCuenta.setOnClickListener(crearCuenta);
         listUs = new ArrayList<>();
-
+        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
+        Usuario = prefs.getString("Usuario","");
+        Password = prefs.getString("Password","");
+        sesion = prefs.getBoolean("sesion",false);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Toast.makeText(LogActivity.this, Usuario, Toast.LENGTH_SHORT).show();
+        if(sesion)
+        {
+            Intent intentAEdicion = new Intent(getApplicationContext(),EdicionActivity.class);
+            startActivity(intentAEdicion);
+            finish();
+        }
 
     }
+
     private View.OnClickListener crearCuenta = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Intent intentRegistrar =new Intent(getApplicationContext(),RegisterActivity.class);
             startActivity(intentRegistrar);
+            finish();
         }
     };
+
     private View.OnClickListener ingresar_click =new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -69,7 +87,7 @@ public class LogActivity extends AppCompatActivity {
             {
                 EmailIngresado = edtUsuario.getText().toString();
                 ContraseñaIngresada = edtPass.getText().toString();
-                TraerUsuarios taskUsuarios = new TraerUsuarios();
+                TraerUsuarios taskUsuarios = new TraerUsuarios(LogActivity.this);
                 taskUsuarios.execute("http://leopashost.hol.es/bd/TraerUsuarios.php");
             }
             else
@@ -80,18 +98,18 @@ public class LogActivity extends AppCompatActivity {
     };
     class TraerUsuarios extends AsyncTask<String,Void, List<Usuario>> {
         private OkHttpClient client = new OkHttpClient();
-       // private ProgressDialog pdia;
-       // public Context context;
-        /*public TraerUsuarios(Context activity)
+        private ProgressDialog pdia;
+        public Context context;
+        public TraerUsuarios(Context activity)
         {
             context = activity;
             pdia = new ProgressDialog(context);
-        }*/
+        }
 
-      /*  protected void onPreExecute(){
+       protected void onPreExecute(){
             this.pdia.setMessage("Cargando...");
             this.pdia.show();
-        }*/
+        }
         @Override
         protected void onPostExecute(List<Usuario> usuariosResult) {
             super.onPostExecute(usuariosResult);
@@ -105,6 +123,7 @@ public class LogActivity extends AppCompatActivity {
                 String UsuarioBase="";
                 String ContraseñaBasee="";
                 String Nombre ="";
+                boolean existe = false;
                 for(Usuario usuario:listUs)
                 {
                    IdUsuario  = usuario.IdUsuario;
@@ -113,13 +132,32 @@ public class LogActivity extends AppCompatActivity {
                     Nombre = usuario.Nombre;
                     if(UsuarioBase.contentEquals(EmailIngresado)&& ContraseñaIngresada.contentEquals(ContraseñaBasee))
                     {
-                        /*if(pdia.isShowing()) {
+                        if(pdia.isShowing()) {
                             pdia.dismiss();
-                        }*/
+                        }
+                        existe =true;
+                        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString("Usuario",UsuarioBase);
+                        editor.putString("Password",ContraseñaBasee);
+                        editor.putBoolean("sesion",true);
+                        editor.putString("Nombre",Nombre);
+                        editor.commit();
+
                         Intent intentAEdicion = new Intent(getApplicationContext(),EdicionActivity.class);
                         startActivity(intentAEdicion);
                     }
 
+
+                }
+                if(!existe)
+                {
+                    if(pdia.isShowing())
+                    {
+                        pdia.dismiss();
+
+                    }
+                    Toast.makeText(LogActivity.this, "El usario y/o la contraseña son incorrectos", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -157,7 +195,7 @@ public class LogActivity extends AppCompatActivity {
                 JSONObject objUsuario = jsonobj.getJSONObject(i);
                 Integer IdUsuario = objUsuario.getInt("IdUsuario");
                 String Email = objUsuario.getString("Email");
-                String Contraseña = objUsuario.getString("Contraseña");
+                String Contraseña = objUsuario.getString("Password");
                 String Nombre = objUsuario.getString("Nombre");
 
                 Usuario usuario = new Usuario(IdUsuario, Email, Contraseña,Nombre);

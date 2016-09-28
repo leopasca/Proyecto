@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
@@ -25,11 +26,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
@@ -179,6 +182,10 @@ public class EdicionActivity extends AppCompatActivity
         pdfView.fromAsset("beitza.pdf").onPageChange(this).load();
         int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);
+        SharedPreferences prefs = getSharedPreferences("MisUsuarios",Context.MODE_PRIVATE);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String Nombre = prefs.getString("Nombre","");
+        Toast.makeText(EdicionActivity.this, "El nombre del usuario es "+Nombre, Toast.LENGTH_SHORT).show();
 
 
 
@@ -487,27 +494,9 @@ public class EdicionActivity extends AppCompatActivity
         builder.setMessage("¿Esta seguro que quiere eliminar el comentario?");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                HttpPost post = new HttpPost();
-                post.setHeader("content-type", "application/json");
 
-                try {
-                    OkHttpClient client = new  OkHttpClient();
-                    String url ="http://leopashost.hol.es/bd/EliminarComentario.php";
-                    JSONObject dato = new JSONObject();
-                    dato.put("IdComentario", idef);
-
-                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(body)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    Log.d("Response", response.body().string());
-                }
-                catch (IOException|JSONException e) {
-                    Log.d("Error", e.getMessage());
-                }
-                Toast.makeText(EdicionActivity.this, "Se ha eliminado", Toast.LENGTH_SHORT).show();
+                imbEliminarCuadroTk eliminarcomentario = new imbEliminarCuadroTk();
+                eliminarcomentario.execute(idef);
                 MapEDT.get(idef).setVisibility(View.INVISIBLE);
                 MapIMB.get(idef).setVisibility(View.INVISIBLE);
                 MapIMG.get(idef).setVisibility(View.INVISIBLE);
@@ -528,7 +517,38 @@ public class EdicionActivity extends AppCompatActivity
         });
         return builder.create();
     }
+    class imbEliminarCuadroTk extends AsyncTask<Integer,Void,String>
+    {
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Toast.makeText(EdicionActivity.this, listo, Toast.LENGTH_SHORT).show();
+        }
+        protected String doInBackground(Integer...params) {
+            Integer idef = params[0];
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
 
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/EliminarComentario.php";
+                JSONObject dato = new JSONObject();
+                dato.put("IdComentario", idef);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                Log.d("Response", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "Comentario Eliminado";
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -887,27 +907,9 @@ public class EdicionActivity extends AppCompatActivity
         builder.setMessage("¿Esta seguro que quiere eliminar el Video?");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                HttpPost post = new HttpPost();
-                post.setHeader("content-type", "application/json");
 
-                try {
-                    OkHttpClient client = new  OkHttpClient();
-                    String url ="http://leopashost.hol.es/bd/EliminarVideo.php";
-                    JSONObject dato = new JSONObject();
-                    dato.put("IdVideo", idef);
-
-                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(body)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    Log.d("Response", response.body().string());
-                }
-                catch (IOException|JSONException e) {
-                    Log.d("Error", e.getMessage());
-                }
-                Toast.makeText(EdicionActivity.this, "Se ha eliminado", Toast.LENGTH_SHORT).show();
+                imbEliminarVideoTk eliminarVideo = new imbEliminarVideoTk();
+                eliminarVideo.execute(idef);
                 MapIMBVideo.get(idef).setVisibility(View.INVISIBLE);
                 MapIMGVideo.get(idef).setVisibility(View.INVISIBLE);
                 MapIMGVideo.remove(idef);
@@ -926,32 +928,44 @@ public class EdicionActivity extends AppCompatActivity
         });
         return builder.create();
     }
-    public View.OnClickListener imbVideoHoja_click = new View.OnClickListener() {
+    class imbEliminarVideoTk extends AsyncTask<Integer,Void,String>
+    {
         @Override
-        public void onClick(View v) {
-          int id = v.getId();
-            String urlVideo ="";
-            HttpGet get = new HttpGet();
-            get.setHeader("content-type", "application/json");
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Toast.makeText(EdicionActivity.this, listo, Toast.LENGTH_SHORT).show();
+        }
+        protected String doInBackground(Integer...params) {
+            Integer idef = params[0];
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+
             try {
                 OkHttpClient client = new  OkHttpClient();
-                String url ="http://www.leopashost.hol.es/bd/TraerUrl.php?IdVideo="+id;
+                String url ="http://leopashost.hol.es/bd/EliminarVideo.php";
                 JSONObject dato = new JSONObject();
-                dato.put("IdVideo",id);
-                Request request1 = new Request.Builder()
+                dato.put("IdVideo", idef);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
                         .url(url)
+                        .post(body)
                         .build();
-                Response response = client.newCall(request1).execute();
-               String resp = response.body().string();
-                urlVideo = getURLVideo(resp);
-                Log.d("url", response.body().string());
+                Response response = client.newCall(request).execute();
+                Log.d("Response", response.body().string());
             }
             catch (IOException|JSONException e) {
                 Log.d("Error", e.getMessage());
             }
-            Intent intentAVideo = new Intent(getApplicationContext(),videoPrueba.class);
-            intentAVideo.putExtra("url",urlVideo);
-            startActivity(intentAVideo);
+        return "Video Eliminado";
+        }
+    }
+    public View.OnClickListener imbVideoHoja_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          int id = v.getId();
+            imbVideoHojaTk urltraer = new imbVideoHojaTk();
+            urltraer.execute(id);
         }
     };
     String getURLVideo (String json)
@@ -966,6 +980,40 @@ public class EdicionActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
             return "Error";
+        }
+    }
+    class imbVideoHojaTk extends  AsyncTask<Integer,Void,String>
+    {
+        String urlVideo ="";
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Intent intentAVideo = new Intent(getApplicationContext(),videoPrueba.class);
+            intentAVideo.putExtra("url",urlVideo);
+            startActivity(intentAVideo);
+        }
+
+        protected String doInBackground(Integer...params) {
+            Integer id = params[0];
+            HttpGet get = new HttpGet();
+            get.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://www.leopashost.hol.es/bd/TraerUrl.php?IdVideo="+id;
+                JSONObject dato = new JSONObject();
+                dato.put("IdVideo",id);
+                Request request1 = new Request.Builder()
+                        .url(url)
+                        .build();
+                Response response = client.newCall(request1).execute();
+                String resp = response.body().string();
+                urlVideo = getURLVideo(resp);
+                Log.d("url", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "listo";
         }
     }
 
@@ -1401,15 +1449,37 @@ public class EdicionActivity extends AppCompatActivity
         @Override
         public boolean onLongClick(View v) {
             int id = v.getId();
-            String Nombre ="";
+           imbEditaNotaTk editanota = new imbEditaNotaTk();
+            editanota.execute(id);
+
+
+            return true;
+        }
+    };
+    class imbEditaNotaTk extends AsyncTask<Integer,Void,String>
+    {
+        String Nombre ="";
+        Integer idef;
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Intent intentAPruebaNota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
+            intentAPruebaNota.putExtra("Nombre",Nombre);
+            intentAPruebaNota.putExtra("IdNota",idef);
+            startActivity(intentAPruebaNota);
+
+        }
+        protected String doInBackground(Integer...params) {
+             idef = params[0];
+
 
             HttpGet get = new HttpGet();
             get.setHeader("content-type", "application/json");
             try {
                 OkHttpClient client = new  OkHttpClient();
-                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+id;
+                String url ="http://leopashost.hol.es/bd/TraerNombreNota.php?IdNota="+idef;
                 JSONObject dato = new JSONObject();
-                dato.put("IdNota",id);
+                dato.put("IdNota",idef);
                 Request request = new Request.Builder()
                         .url(url)
                         .get()
@@ -1422,13 +1492,8 @@ public class EdicionActivity extends AppCompatActivity
             catch (IOException|JSONException e) {
                 Log.d("Error", e.getMessage());
             }
-            Intent intentAPruebaNota = new Intent(getApplicationContext(),pruebaNotaVoz.class);
-            intentAPruebaNota.putExtra("Nombre",Nombre);
-            intentAPruebaNota.putExtra("IdNota",id);
-            startActivity(intentAPruebaNota);
-
-            return true;
+            return "Comentario Eliminado";
         }
-    };
+    }
     
 }

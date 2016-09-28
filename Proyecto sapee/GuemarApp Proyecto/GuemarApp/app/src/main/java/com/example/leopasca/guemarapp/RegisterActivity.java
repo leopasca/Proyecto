@@ -1,6 +1,9 @@
 package com.example.leopasca.guemarapp;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,10 +20,13 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
     Button btnRegistrar;
@@ -57,31 +63,11 @@ public class RegisterActivity extends AppCompatActivity {
         public void onClick(View view) {
           if(!edtPassReg.getText().toString().isEmpty()||!edtUsuarioReg.getText().toString().isEmpty()||!edtNombreReg.getText().toString().isEmpty())
           {
-              HttpPost post = new HttpPost();
-              post.setHeader("content-type", "application/json");
                UsuarioReg= edtUsuarioReg.getText().toString();
                Contraseña = edtPassReg.getText().toString();
                Nombre = edtNombreReg.getText().toString();
-              try {
-                  OkHttpClient client = new  OkHttpClient();
-                  String urlReg ="http://leopashost.hol.es/bd/CrearUsuario.php";
-                  JSONObject dato = new JSONObject();
-                  dato.put("Email", UsuarioReg);
-                  dato.put("Contraseña",Contraseña);
-                  dato.put("Nombre",Nombre);
-                  RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
-                  Request request = new Request.Builder()
-                          .url(urlReg)
-                          .post(body)
-                          .build();
-                  Response response = client.newCall(request).execute();
-                  //Log.d("Response", response.body().string());
-              }
-              catch (IOException |JSONException e) {
-                  Log.d("Error", e.getMessage());
-              }
-              Intent intentIngresar= new Intent(getApplicationContext(),LogActivity.class);
-              startActivity(intentIngresar);
+              RegistrarUsuario taskUsuarios = new RegistrarUsuario(RegisterActivity.this);
+              taskUsuarios.execute("http://leopashost.hol.es/bd/CrearUsuario.php");
           }
             else
           {
@@ -89,4 +75,64 @@ public class RegisterActivity extends AppCompatActivity {
           }
         }
     };
+    class RegistrarUsuario extends AsyncTask<String,Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+        private ProgressDialog pdia;
+        public Context context;
+        public RegistrarUsuario(Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+
+        protected void onPreExecute(){
+            this.pdia.setMessage("Cargando...");
+            this.pdia.show();
+        }
+        @Override
+        protected void onPostExecute(String Registrado) {
+            super.onPostExecute(Registrado);
+            if(pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
+            Toast.makeText(RegisterActivity.this, "El usuario ha sido "+ Registrado + " correctamente", Toast.LENGTH_SHORT).show();
+            Intent intentALog = new Intent(getApplicationContext(),LogActivity.class);
+            startActivity(intentALog);
+            finish();
+
+        }
+
+
+        @Override
+        protected String doInBackground(String...params) {
+            String url = params[0];
+
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+
+                JSONObject dato = new JSONObject();
+                dato.put("Email", UsuarioReg);
+                dato.put("Password",Contraseña);
+                dato.put("Nombre",Nombre);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                //Log.d("Response", response.body().string());
+            }
+            catch (IOException |JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            Intent intentIngresar= new Intent(getApplicationContext(),LogActivity.class);
+            startActivity(intentIngresar);
+            return "registrado";
+        }
+
+
+    }
 }
