@@ -7,6 +7,10 @@
             android:icon="@drawable/ic_view_menu"
             android:title="Menu" />
         <item
+            android:id="@+id/Biblioteca"
+            android:icon="@mipmap/ic_biblio"
+            android:title="Biblioteca" />
+        <item
             android:id="@+id/Amigos"
             android:icon="@drawable/ic_group_amigos"
             android:title="Amigos" />

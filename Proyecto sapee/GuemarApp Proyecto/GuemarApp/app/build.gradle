@@ -32,4 +32,5 @@ dependencies {
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile project(':library:android-pdfView')
     compile files('libs/YouTubeAndroidPlayerApi.jar')
+
 }
