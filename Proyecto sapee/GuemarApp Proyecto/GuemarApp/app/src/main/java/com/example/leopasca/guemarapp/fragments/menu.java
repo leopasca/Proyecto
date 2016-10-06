@@ -37,7 +37,7 @@ public class menu extends Fragment {
         ObtenerReferencias();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         String Nombre = prefs.getString("Nombre","");
-        txvBienvenido.setText("Bienvenido a GuemarApp " + Nombre);
+        txvBienvenido.setText("Bienvenido/a a GuemarApp " + Nombre);
 
 
     }

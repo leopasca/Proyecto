@@ -56,11 +56,13 @@ public class pruebaNotaVoz extends AppCompatActivity {
     TextView txvAudio;
     int IdNota;
     Button btnSubir;
+    Button btnVolver;
     public void ObtenerReferencias()
     {
 
         txvAudio =(TextView)findViewById(R.id.txvAudio);
         btnSubir=(Button)findViewById(R.id.btnSubir);
+        btnVolver =(Button)findViewById(R.id.btnVolver);
 
     }
 
@@ -77,8 +79,17 @@ public class pruebaNotaVoz extends AppCompatActivity {
         txvAudio.setText(nombreNota);
 
         btnSubir.setOnClickListener(btnSubir_click);
+        btnVolver.setOnClickListener(volver);
 
     }
+    public View.OnClickListener volver = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          Intent intentedicion =new Intent(getApplicationContext(),EdicionActivity.class);
+            startActivity(intentedicion);
+            finish();
+        }
+    };
     public void butonApretado(View view)
     {
         switch (view.getId())
