@@ -2,9 +2,12 @@ package com.example.leopasca.guemarapp.fragments;
 
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,11 +30,15 @@ import android.widget.Toast;
 
 import com.example.leopasca.guemarapp.Comentario;
 import com.example.leopasca.guemarapp.Grupos;
+import com.example.leopasca.guemarapp.LogActivity;
 import com.example.leopasca.guemarapp.R;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +55,7 @@ public class grupos extends Fragment {
     FrameLayout layout;
     Button btnCreargrupo;
     ListView listview;
+    String Nombre ="";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,11 +74,21 @@ public class grupos extends Fragment {
         TraerGrupos taskTraer = new TraerGrupos(getActivity());
         taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php");
         btnCreargrupo.setOnClickListener(crearGrupo);
+        listview.setOnItemClickListener(item);
     }
+    public AdapterView.OnItemClickListener item = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            Toast.makeText(getActivity(), position, Toast.LENGTH_SHORT).show();
+        }
+    };
+
     public View.OnClickListener crearGrupo = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            Dialog dialogo = dialogoNombre();
+            dialogo.show();
         }
     };
     public Dialog dialogoNombre()
@@ -88,7 +107,11 @@ public class grupos extends Fragment {
             public void onClick(DialogInterface dialog, int id) {
                 if(!input.getText().toString().isEmpty()) {
 
-
+                    Nombre = input.getText().toString();
+                    CrearGrupo creargrupo = new CrearGrupo(getActivity());
+                    creargrupo.execute("http://leopashost.hol.es/bd/CrearGrupo.php");
+                    TraerGrupos taskTraer = new TraerGrupos(getActivity());
+                    taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php");
                 }
                 else
                 {
@@ -98,6 +121,61 @@ public class grupos extends Fragment {
 
         });
         return builder1.create();
+    }
+    class CrearGrupo extends AsyncTask<String,Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+        private ProgressDialog pdia;
+        public Context context;
+        public CrearGrupo(Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+
+        protected void onPreExecute(){
+            this.pdia.setMessage("Cargando...");
+            this.pdia.show();
+        }
+        @Override
+        protected void onPostExecute(String Registrado) {
+            super.onPostExecute(Registrado);
+            if(pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
+            Toast.makeText(getActivity(), "El grupo ha sido "+ Registrado + " correctamente", Toast.LENGTH_SHORT).show();
+
+
+
+        }
+
+
+        @Override
+        protected String doInBackground(String...params) {
+            String url = params[0];
+
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+            try {
+                OkHttpClient client = new  OkHttpClient();
+
+                JSONObject dato = new JSONObject();
+                dato.put("Nombre",Nombre);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+
+            }
+            catch (IOException |JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "creado";
+        }
+
+
     }
 
     class TraerGrupos extends AsyncTask<String, Void, List<Grupos>> {
