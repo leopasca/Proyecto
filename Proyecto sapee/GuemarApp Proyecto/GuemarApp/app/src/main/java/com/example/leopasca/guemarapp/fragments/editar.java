@@ -317,6 +317,7 @@ public class editar extends Fragment implements OnPageChangeListener{
                             dato.put("CordAsteriscoY", y);
                             dato.put("IdHoja",IdHoja);
                             dato.put("IdUsuario",IdUsuario);
+                            dato.put("IdGrupo",null);
                             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                             Request request = new Request.Builder()
                                     .url(url)

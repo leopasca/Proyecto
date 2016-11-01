@@ -72,6 +72,7 @@ import android.widget.Toast;
 
 import com.example.leopasca.guemarapp.fragments.Biblioteca;
 import com.example.leopasca.guemarapp.fragments.editar;
+import com.example.leopasca.guemarapp.fragments.grupos;
 import com.example.leopasca.guemarapp.fragments.menu;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -168,6 +169,7 @@ public class EdicionActivity extends AppCompatActivity
         } else if (id == R.id.Amigos) {
 
         } else if (id == R.id.Grupos) {
+            fm.beginTransaction().replace(R.id.content_frame,new grupos()).commit();
 
         } else if (id == R.id.Acerca) {
 
