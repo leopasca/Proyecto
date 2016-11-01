@@ -1,12 +1,15 @@
 package com.example.leopasca.guemarapp.fragments;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.leopasca.guemarapp.Comentario;
 import com.example.leopasca.guemarapp.Grupos;
@@ -68,6 +72,34 @@ public class grupos extends Fragment {
 
         }
     };
+    public Dialog dialogoNombre()
+    {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+        builder1.setTitle("Nombre Grupo");
+        builder1.setMessage("Ingrese un Nombre");
+        final EditText input = new EditText(getActivity());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        input.setHint("Nombre");
+        builder1.setView(input);
+        builder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if(!input.getText().toString().isEmpty()) {
+
+
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Ingrese un Nombre", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
+        return builder1.create();
+    }
+
     class TraerGrupos extends AsyncTask<String, Void, List<Grupos>> {
         private OkHttpClient client = new OkHttpClient();
         private ProgressDialog pdia;
