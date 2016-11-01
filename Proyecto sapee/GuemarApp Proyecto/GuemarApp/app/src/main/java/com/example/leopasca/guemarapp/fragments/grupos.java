@@ -79,8 +79,10 @@ public class grupos extends Fragment {
     public AdapterView.OnItemClickListener item = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            Toast.makeText(getActivity(), position, Toast.LENGTH_SHORT).show();
+            String Id= (listview.getItemAtPosition(position).toString());
+            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),CrearGrupo.class);
+            intentAGrupo.putExtra("Nombre",Id);
+            startActivity(intentAGrupo);
         }
     };
 
