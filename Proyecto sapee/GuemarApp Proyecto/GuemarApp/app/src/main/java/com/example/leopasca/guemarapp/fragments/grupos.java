@@ -32,6 +32,8 @@ import com.example.leopasca.guemarapp.Comentario;
 import com.example.leopasca.guemarapp.Grupos;
 import com.example.leopasca.guemarapp.LogActivity;
 import com.example.leopasca.guemarapp.R;
+import com.example.leopasca.guemarapp.creargrupo;
+import com.example.leopasca.guemarapp.videoPrueba;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -80,9 +82,10 @@ public class grupos extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String Id= (listview.getItemAtPosition(position).toString());
-            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),CrearGrupo.class);
+            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),creargrupo.class);
             intentAGrupo.putExtra("Nombre",Id);
             startActivity(intentAGrupo);
+
         }
     };
 
@@ -91,6 +94,7 @@ public class grupos extends Fragment {
         public void onClick(View v) {
             Dialog dialogo = dialogoNombre();
             dialogo.show();
+
         }
     };
     public Dialog dialogoNombre()
@@ -111,7 +115,7 @@ public class grupos extends Fragment {
 
                     Nombre = input.getText().toString();
                     CrearGrupo creargrupo = new CrearGrupo(getActivity());
-                    creargrupo.execute("http://leopashost.hol.es/bd/CrearGrupo.php");
+                    creargrupo.execute("http://leopashost.hol.es/bd/creargrupo.php");
                     TraerGrupos taskTraer = new TraerGrupos(getActivity());
                     taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php");
                 }

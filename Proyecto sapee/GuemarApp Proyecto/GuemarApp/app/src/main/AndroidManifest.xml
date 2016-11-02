@@ -36,7 +36,7 @@
         <activity android:name=".SplashActivity" />
         <activity android:name=".PruebaBajarNota" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".CrearGrupo"></activity>
+        <activity android:name=".creargrupo"></activity>
     </application>
 
 </manifest>
