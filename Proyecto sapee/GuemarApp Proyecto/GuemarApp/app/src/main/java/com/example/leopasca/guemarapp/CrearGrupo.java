@@ -48,8 +48,7 @@ public class creargrupo extends AppCompatActivity {
         txvNombre.setText(Nombre);
         TraerGrupo traerGrupo = new TraerGrupo(this);
         traerGrupo.execute("http://leopashost.hol.es/bd/TraerGrupo.php?Nombre="+Nombre);
-        TraerIntegrantes traerIntegrantes = new TraerIntegrantes(this);
-        traerIntegrantes.execute("http://leopashost.hol.es/bd/TraerIntegrantes.php?IdGrupo"+IdGrupo);
+
 
     }
     class TraerGrupo extends AsyncTask<String, Void, Integer> {
@@ -73,8 +72,8 @@ public class creargrupo extends AppCompatActivity {
             {
                 pdia.dismiss();
             }
-            IdGrupo = comentResult;
-
+            TraerIntegrantes traerIntegrantes = new TraerIntegrantes(context);
+            traerIntegrantes.execute("http://leopashost.hol.es/bd/TraerIntegrantes.php?IdGrupo="+comentResult);
         }
 
         @Override
@@ -104,10 +103,10 @@ public class creargrupo extends AppCompatActivity {
 
             for (int i = 0; i < jsonobj.length(); i++) {
                 JSONObject objComen = jsonobj.getJSONObject(i);
-                Integer IdGrupo = objComen.getInt("IdGrupo");
+                Integer IdGrupo2 = objComen.getInt("IdGrupo");
                 String Nombre = objComen.getString("Nombre");
                 Grupos grupo = new Grupos(IdGrupo, Nombre);
-                listgrupos = IdGrupo;
+                listgrupos = IdGrupo2;
 
             }
             return listgrupos;
@@ -176,9 +175,9 @@ public class creargrupo extends AppCompatActivity {
 
                 JSONObject objComen = jsonobj.getJSONObject(i);
                 Integer IdUsuario = objComen.getInt("IdUsuario");
-                String Usuario = objComen.getString("Usuario");
-                String Contraseña = objComen.getString("Contraseña");
-                Integer IdGrupo = objComen.getInt("IdGrupo");
+                String Usuario = objComen.getString("Email");
+                String Contraseña = objComen.getString("Password");
+                Integer IdGrupo = objComen.getInt("IdGrupos");
                 String Nombre = objComen.getString("Nombre");
                 Usuario usuario = new Usuario(IdUsuario,Usuario,Contraseña,Nombre,IdGrupo);
                 listInteg.add(usuario);

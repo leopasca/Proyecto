@@ -85,8 +85,7 @@ public class pruebaNotaVoz extends AppCompatActivity {
     public View.OnClickListener volver = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          Intent intentedicion =new Intent(getApplicationContext(),EdicionActivity.class);
-            startActivity(intentedicion);
+
             finish();
         }
     };
@@ -240,8 +239,6 @@ public class pruebaNotaVoz extends AppCompatActivity {
                 }
                 File file = new File(OUTPUT_FILE);
                 file.delete();
-                Intent intentAMain = new Intent(getApplicationContext(),EdicionActivity.class);
-                startActivity(intentAMain);
                 finish();
 
             }

@@ -219,11 +219,11 @@ public class editar extends Fragment implements OnPageChangeListener{
         MapIMBVideo.clear();
         int pageNumber = pdfView.getCurrentPage();
         ProgressTask task = new ProgressTask();
-        task.execute("http://leopashost.hol.es/bd/ListarComentarios.php?IdHoja="+pageNumber+"&IdUsuario"+IdUsuario);
+        task.execute("http://leopashost.hol.es/bd/ListarComentarios.php?IdHoja="+pageNumber+"&IdUsuario="+IdUsuario);
         ListarVideos taskVideo = new ListarVideos();
-        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+pageNumber+"&IdUsuario"+IdUsuario);
+        taskVideo.execute("http://leopashost.hol.es/bd/ListarVideos.php?IdHoja="+pageNumber+"&IdUsuario="+IdUsuario);
         ListarNotas listarNotas = new ListarNotas();
-        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+pageNumber+"&IdUsuario"+IdUsuario
+        listarNotas.execute("http://leopashost.hol.es/bd/ListarNotas.php?IdHoja="+pageNumber+"&IdUsuario="+IdUsuario
         );
 
     }

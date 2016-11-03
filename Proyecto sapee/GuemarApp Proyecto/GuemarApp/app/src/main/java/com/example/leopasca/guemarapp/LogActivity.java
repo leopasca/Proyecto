@@ -186,6 +186,7 @@ public class LogActivity extends AppCompatActivity {
         List<Usuario>parse(String json)throws JSONException
 
         {
+            Integer IdGrupo=0;
             JSONArray jsonobj = new JSONArray(json);
             listUsuario = new ArrayList<Usuario>();
             for(int i=0;i<jsonobj.length();i++)
@@ -196,7 +197,9 @@ public class LogActivity extends AppCompatActivity {
                 String Email = objUsuario.getString("Email");
                 String Contraseña = objUsuario.getString("Password");
                 String Nombre = objUsuario.getString("Nombre");
-                Integer IdGrupo =  objUsuario.getInt("IdGrupo");
+
+                    IdGrupo = objUsuario.getInt("IdGrupos");
+
 
                 Usuario usuario = new Usuario(IdUsuario, Email, Contraseña,Nombre,IdGrupo);
                 listUsuario.add(usuario);

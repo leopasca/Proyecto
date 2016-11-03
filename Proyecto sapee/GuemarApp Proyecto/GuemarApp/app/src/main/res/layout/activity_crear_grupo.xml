@@ -22,9 +22,10 @@
         android:layout_width="wrap_content"
         android:layout_height="300dp"
         android:id="@+id/listView2"
-        android:layout_centerVertical="true"
+        android:layout_above="@+id/btnEditar"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#ffff99"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -32,9 +33,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Integrantes"
         android:id="@+id/textView6"
-        android:layout_above="@+id/listView2"
+        android:layout_below="@+id/txvNombre"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="36dp" />
 
     <ImageButton
         android:layout_width="50dp"
