@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class creargrupo extends AppCompatActivity {
+public class CrearGrupo extends AppCompatActivity {
     TextView txvNombre;
     ListView listview;
     Integer IdGrupo =0 ;

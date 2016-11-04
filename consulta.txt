@@ -1,0 +1,4 @@
+]SELECT * From Grupos WHERE idGrupo in (Select IdGrupo From UsuariosGrupo WHERE IdUsuario = 1)
+
+
+SELECT * From Grupos INNER JOIN UsuariosGrupo ON Grupos .IdGrupo = UsuariosGrupo .IdGrupo WHERE UsuariosGrupo .IdUsuario = 1

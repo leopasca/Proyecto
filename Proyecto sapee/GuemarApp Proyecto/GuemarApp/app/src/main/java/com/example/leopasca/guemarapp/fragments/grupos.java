@@ -32,7 +32,7 @@ import com.example.leopasca.guemarapp.Comentario;
 import com.example.leopasca.guemarapp.Grupos;
 import com.example.leopasca.guemarapp.LogActivity;
 import com.example.leopasca.guemarapp.R;
-import com.example.leopasca.guemarapp.creargrupo;
+import com.example.leopasca.guemarapp.CrearGrupo;
 import com.example.leopasca.guemarapp.videoPrueba;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -82,7 +82,7 @@ public class grupos extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String Id= (listview.getItemAtPosition(position).toString());
-            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),creargrupo.class);
+            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),CrearGrupo.class);
             intentAGrupo.putExtra("Nombre",Id);
             startActivity(intentAGrupo);
 
