@@ -158,6 +158,8 @@ public class grupos extends Fragment {
             int IdUsuario = prefs.getInt("IdUsuario",0);
             TraerGrupos taskTraer = new TraerGrupos(getActivity());
             taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php?IdUsuario="+IdUsuario);
+            AñadirUsuario añadir = new AñadirUsuario(getActivity());
+            añadir.execute("http://leopashost.hol.es/bd/CargarDueño.php");
 
 
 
@@ -191,79 +193,56 @@ public class grupos extends Fragment {
 
     }
     //VER ESTO Abajo
-    class AñadirUsuario extends AsyncTask<String, Void, List<Grupos>> {
+    class AñadirUsuario extends AsyncTask<String,Void, String> {
         private OkHttpClient client = new OkHttpClient();
         private ProgressDialog pdia;
         public Context context;
-        public AñadirUsuario (Context activity)
+        public AñadirUsuario(Context activity)
         {
             context = activity;
             pdia = new ProgressDialog(context);
         }
+
         protected void onPreExecute(){
-            this.pdia.setMessage("Cargando Grupos");
+            this.pdia.setMessage("Cargando...");
             this.pdia.show();
         }
-
         @Override
-        protected void onPostExecute(List<Grupos> comentResult) {
-            super.onPostExecute(comentResult);
-            if (pdia.isShowing())
+        protected void onPostExecute(String Registrado) {
+            super.onPostExecute(Registrado);
+            if(pdia.isShowing())
             {
                 pdia.dismiss();
             }
-            ArrayList<String>Nombres = new ArrayList<String>();
-            for(Grupos comen:comentResult) {
-                String Nombre = comen.Nombre;
-                Nombres.add(Nombre);
-            }
-            ArrayAdapter<String> adapter=
-                    new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,Nombres);
-            listview.setAdapter(adapter);
-
-
-
         }
-
-        List<Comentario> listson = new ArrayList<Comentario>();
-
         @Override
-        protected List<Grupos> doInBackground(String... params) {
+        protected String doInBackground(String...params) {
             String url = params[0];
 
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
             try {
-                HttpGet get = new HttpGet();
-                get.setHeader("content-type", "application/json");
+                OkHttpClient client = new  OkHttpClient();
+                JSONObject dato = new JSONObject();
+                dato.put("IdUsuario",IdUsuario);
+                dato.put("Nombre",Nombre);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)
+                        .post(body)
                         .build();
-
                 Response response = client.newCall(request).execute();
-                //Log.d("Anda",response.body().string());
-                return parse2(response.body().string());
-            } catch (IOException | JSONException e) {
+
+            }
+            catch (IOException |JSONException e) {
                 Log.d("Error", e.getMessage());
-                return new ArrayList<Grupos>();
             }
+            return "creado";
         }
 
-        List<Grupos> parse2(String json) throws JSONException
-
-        {
-            List<Grupos> listgrupos;
-            JSONArray jsonobj = new JSONArray(json);
-            listgrupos = new ArrayList<Grupos>();
-            for (int i = 0; i < jsonobj.length(); i++) {
-
-                JSONObject objComen = jsonobj.getJSONObject(i);
-                Integer IdGrupo = objComen.getInt("IdGrupo");
-                String Nombre = objComen.getString("Nombre");
-                Grupos grupo = new Grupos(IdGrupo, Nombre);
-                listgrupos.add(grupo);
-
-            }
-            return listgrupos;
-        }
 
     }
 
