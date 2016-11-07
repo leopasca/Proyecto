@@ -154,15 +154,9 @@ public class grupos extends Fragment {
                 pdia.dismiss();
             }
             Toast.makeText(getActivity(), "El grupo ha sido "+ Registrado + " correctamente", Toast.LENGTH_SHORT).show();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-            int IdUsuario = prefs.getInt("IdUsuario",0);
-            TraerGrupos taskTraer = new TraerGrupos(getActivity());
-            taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php?IdUsuario="+IdUsuario);
+
             AñadirUsuario añadir = new AñadirUsuario(getActivity());
-            añadir.execute("http://leopashost.hol.es/bd/CargarDueño.php");
-
-
-
+            añadir.execute("http://leopashost.hol.es/bd/CargarDueno.php");
         }
 
 
@@ -214,6 +208,10 @@ public class grupos extends Fragment {
             {
                 pdia.dismiss();
             }
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
+            TraerGrupos taskTraer = new TraerGrupos(getActivity());
+            taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php?IdUsuario="+IdUsuario);
         }
         @Override
         protected String doInBackground(String...params) {
