@@ -8,9 +8,11 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -40,6 +42,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,8 +76,10 @@ public class grupos extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ObtenerReferencias();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        int IdUsuario = prefs.getInt("IdUsuario",0);
         TraerGrupos taskTraer = new TraerGrupos(getActivity());
-        taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php");
+        taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php?IdUsuario="+IdUsuario);
         btnCreargrupo.setOnClickListener(crearGrupo);
         listview.setOnItemClickListener(item);
     }
@@ -82,7 +87,7 @@ public class grupos extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String Id= (listview.getItemAtPosition(position).toString());
-            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),CrearGrupo.class);
+            Intent intentAGrupo = new Intent(getActivity().getApplicationContext(),com.example.leopasca.guemarapp.CrearGrupo.class);
             intentAGrupo.putExtra("Nombre",Id);
             startActivity(intentAGrupo);
 
@@ -115,9 +120,8 @@ public class grupos extends Fragment {
 
                     Nombre = input.getText().toString();
                     CrearGrupo creargrupo = new CrearGrupo(getActivity());
-                    creargrupo.execute("http://leopashost.hol.es/bd/creargrupo.php");
-                    TraerGrupos taskTraer = new TraerGrupos(getActivity());
-                    taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php");
+                    creargrupo.execute("http://leopashost.hol.es/bd/CrearGrupo.php");
+
                 }
                 else
                 {
@@ -150,6 +154,10 @@ public class grupos extends Fragment {
                 pdia.dismiss();
             }
             Toast.makeText(getActivity(), "El grupo ha sido "+ Registrado + " correctamente", Toast.LENGTH_SHORT).show();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
+            TraerGrupos taskTraer = new TraerGrupos(getActivity());
+            taskTraer.execute("http://leopashost.hol.es/bd/TraerGrupos.php?IdUsuario="+IdUsuario);
 
 
 
@@ -164,7 +172,6 @@ public class grupos extends Fragment {
             post.setHeader("content-type", "application/json");
             try {
                 OkHttpClient client = new  OkHttpClient();
-
                 JSONObject dato = new JSONObject();
                 dato.put("Nombre",Nombre);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
@@ -181,6 +188,82 @@ public class grupos extends Fragment {
             return "creado";
         }
 
+
+    }
+    //VER ESTO Abajo
+    class AñadirUsuario extends AsyncTask<String, Void, List<Grupos>> {
+        private OkHttpClient client = new OkHttpClient();
+        private ProgressDialog pdia;
+        public Context context;
+        public AñadirUsuario (Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+        protected void onPreExecute(){
+            this.pdia.setMessage("Cargando Grupos");
+            this.pdia.show();
+        }
+
+        @Override
+        protected void onPostExecute(List<Grupos> comentResult) {
+            super.onPostExecute(comentResult);
+            if (pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
+            ArrayList<String>Nombres = new ArrayList<String>();
+            for(Grupos comen:comentResult) {
+                String Nombre = comen.Nombre;
+                Nombres.add(Nombre);
+            }
+            ArrayAdapter<String> adapter=
+                    new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,Nombres);
+            listview.setAdapter(adapter);
+
+
+
+        }
+
+        List<Comentario> listson = new ArrayList<Comentario>();
+
+        @Override
+        protected List<Grupos> doInBackground(String... params) {
+            String url = params[0];
+
+            try {
+                HttpGet get = new HttpGet();
+                get.setHeader("content-type", "application/json");
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                //Log.d("Anda",response.body().string());
+                return parse2(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Grupos>();
+            }
+        }
+
+        List<Grupos> parse2(String json) throws JSONException
+
+        {
+            List<Grupos> listgrupos;
+            JSONArray jsonobj = new JSONArray(json);
+            listgrupos = new ArrayList<Grupos>();
+            for (int i = 0; i < jsonobj.length(); i++) {
+
+                JSONObject objComen = jsonobj.getJSONObject(i);
+                Integer IdGrupo = objComen.getInt("IdGrupo");
+                String Nombre = objComen.getString("Nombre");
+                Grupos grupo = new Grupos(IdGrupo, Nombre);
+                listgrupos.add(grupo);
+
+            }
+            return listgrupos;
+        }
 
     }
 
@@ -224,10 +307,13 @@ public class grupos extends Fragment {
         protected List<Grupos> doInBackground(String... params) {
             String url = params[0];
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
             try {
+                HttpGet get = new HttpGet();
+                get.setHeader("content-type", "application/json");
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+
                 Response response = client.newCall(request).execute();
                 //Log.d("Anda",response.body().string());
                 return parse2(response.body().string());
