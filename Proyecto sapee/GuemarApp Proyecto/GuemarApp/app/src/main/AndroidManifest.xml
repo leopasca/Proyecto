@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.leopasca.guemarapp">
+    package="com.example.leopasca.guemarapp" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -16,7 +16,7 @@
         android:icon="@mipmap/ic_launcher1"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".EdicionActivity"
             android:label="@string/app_name"
@@ -26,7 +26,7 @@
             android:name=".videoPrueba"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".pruebaNotaVoz" />
-        <activity android:name=".LogActivity">
+        <activity android:name=".LogActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +36,9 @@
         <activity android:name=".SplashActivity" />
         <activity android:name=".PruebaBajarNota" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".CrearGrupo"></activity>
+        <activity android:name=".CrearGrupo" />
+        <activity android:name=".EditarGrupo" >
+        </activity>
     </application>
 
 </manifest>

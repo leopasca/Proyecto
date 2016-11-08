@@ -7,7 +7,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,11 +34,13 @@ public class CrearGrupo extends AppCompatActivity {
     ListView listview;
     Integer IdGrupo =0 ;
     String Nombre ="";
+    Button btnEditar;
     public void ObtenerReferencias()
     {
 
         txvNombre = (TextView)findViewById(R.id.txvNombre);
         listview =(ListView)findViewById(R.id.listView2);
+        btnEditar =(Button)findViewById(R.id.btnEditar);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +52,19 @@ public class CrearGrupo extends AppCompatActivity {
         txvNombre.setText(Nombre);
         TraerGrupo traerGrupo = new TraerGrupo(this);
         traerGrupo.execute("http://leopashost.hol.es/bd/TraerGrupo.php?Nombre="+Nombre);
+        btnEditar.setOnClickListener(editar);
+
 
 
     }
+    public View.OnClickListener editar = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(),EditarGrupo.class);
+            intent.putExtra("IdGrupo",IdGrupo);
+            startActivity(intent);
+        }
+    };
     class TraerGrupo extends AsyncTask<String, Void, Integer> {
         private OkHttpClient client = new OkHttpClient();
         private ProgressDialog pdia;

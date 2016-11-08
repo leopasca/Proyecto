@@ -729,7 +729,7 @@ public class editar extends Fragment implements OnPageChangeListener{
             Double CordComentarioY = objComen.getDouble("CordComentarioY");
             Double CordAsteriscoX = objComen.getDouble("CordAsteriscoX");
             Double CordAsteriscoY = objComen.getDouble("CordAsteriscoY");
-            Comentario comen = new Comentario(IdComentario, Comentario, CordComentarioY, CordAsteriscoX, CordAsteriscoY);
+            Comentario comen = new Comentario(IdComentario, Comentario, CordComentarioY, CordAsteriscoX, CordAsteriscoY,"nom");
             listComen.add(comen);
 
         }
