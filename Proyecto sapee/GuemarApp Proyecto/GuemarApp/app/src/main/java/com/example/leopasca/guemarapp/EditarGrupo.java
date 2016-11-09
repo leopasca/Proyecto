@@ -273,7 +273,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
 
                         ImageButton imbBoton = new ImageButton(getApplicationContext());
                         imbBoton.setImageResource(R.mipmap.comentario_hoja);
-                        imbBoton.setX(540);
+                        imbBoton.setX(600);
                         imbBoton.setY(y);
                         imbBoton.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
                         int IdHoja = pdfView.getCurrentPage();
@@ -623,7 +623,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
                     Log.d("VALOR",idComentario.toString());
                     ImageButton imbBoton = new ImageButton(getApplicationContext());
                     imbBoton.setImageResource(R.mipmap.comentario_hoja);
-                    imbBoton.setX(540);
+                    imbBoton.setX(600);
                     imbBoton.setY(CordComentarioYfloat);
                     imbBoton.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
                     layout.addView(imbBoton);
@@ -703,6 +703,8 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
         List<Comentario> listComen;
         JSONArray jsonobj = new JSONArray(json);
         listComen = new ArrayList<Comentario>();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        NombreLog = prefs.getString("Nombre","");
         for (int i = 0; i < jsonobj.length(); i++) {
 
             JSONObject objComen = jsonobj.getJSONObject(i);
@@ -711,7 +713,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
             Double CordComentarioY = objComen.getDouble("CordComentarioY");
             Double CordAsteriscoX = objComen.getDouble("CordAsteriscoX");
             Double CordAsteriscoY = objComen.getDouble("CordAsteriscoY");
-            String NombreUsuario = objComen.getString("NombreUsuario");
+            String NombreUsuario = objComen.getString("Nombre");
             Comentario comen = new Comentario(IdComentario, Comentario, CordComentarioY, CordAsteriscoX, CordAsteriscoY,NombreUsuario);
             listComen.add(comen);
 
@@ -735,7 +737,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
 
             ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
             imbBotonVideo.setImageResource(R.mipmap.video_hoja);
-            imbBotonVideo.setX(540);
+            imbBotonVideo.setX(600);
             imbBotonVideo.setY(yVideo);
             imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
             int IdHoja = pdfView.getCurrentPage();
@@ -955,7 +957,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
 
                     ImageButton imbBotonVideo = new ImageButton(getApplicationContext());
                     imbBotonVideo.setImageResource(R.mipmap.video_hoja);
-                    imbBotonVideo.setX(540);
+                    imbBotonVideo.setX(600);
                     imbBotonVideo.setY(CordVideoYfloat);
                     imbBotonVideo.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
                     layout.addView(imbBotonVideo);
@@ -1134,7 +1136,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
 
             ImageButton imbBotonNota = new ImageButton(getApplicationContext());
             imbBotonNota.setImageResource(R.mipmap.nota_hoja);
-            imbBotonNota.setX(540);
+            imbBotonNota.setX(600);
             imbBotonNota.setY(yNota);
             imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
             int IdHoja = pdfView.getCurrentPage();
@@ -1312,7 +1314,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
 
                     ImageButton imbBotonNota = new ImageButton(getApplicationContext());
                     imbBotonNota.setImageResource(R.mipmap.nota_hoja);
-                    imbBotonNota.setX(540);
+                    imbBotonNota.setX(600);
                     imbBotonNota.setY(CordNotaYfloat);
                     imbBotonNota.setLayoutParams(new LinearLayout.LayoutParams(60, 60));
                     layout.addView(imbBotonNota);

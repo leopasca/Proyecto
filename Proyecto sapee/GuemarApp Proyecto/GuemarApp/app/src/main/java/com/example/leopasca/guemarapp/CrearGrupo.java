@@ -57,14 +57,7 @@ public class CrearGrupo extends AppCompatActivity {
 
 
     }
-    public View.OnClickListener editar = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(),EditarGrupo.class);
-            intent.putExtra("IdGrupo",IdGrupo);
-            startActivity(intent);
-        }
-    };
+
     class TraerGrupo extends AsyncTask<String, Void, Integer> {
         private OkHttpClient client = new OkHttpClient();
         private ProgressDialog pdia;
@@ -88,6 +81,7 @@ public class CrearGrupo extends AppCompatActivity {
             }
             TraerIntegrantes traerIntegrantes = new TraerIntegrantes(context);
             traerIntegrantes.execute("http://leopashost.hol.es/bd/TraerIntegrantes.php?IdGrupo="+comentResult);
+            IdGrupo = comentResult;
         }
 
         @Override
@@ -201,4 +195,12 @@ public class CrearGrupo extends AppCompatActivity {
         }
 
     }
+    public View.OnClickListener editar = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(),EditarGrupo.class);
+            intent.putExtra("IdGrupo",IdGrupo);
+            startActivity(intent);
+        }
+    };
 }

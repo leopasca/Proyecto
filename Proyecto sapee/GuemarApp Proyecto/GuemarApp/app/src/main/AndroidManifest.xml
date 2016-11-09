@@ -37,7 +37,8 @@
         <activity android:name=".PruebaBajarNota" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CrearGrupo" />
-        <activity android:name=".EditarGrupo" >
+        <activity android:name=".EditarGrupo"
+            android:noHistory="true">
         </activity>
     </application>
 

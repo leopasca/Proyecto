@@ -57,12 +57,15 @@ public class pruebaNotaVoz extends AppCompatActivity {
     int IdNota;
     Button btnSubir;
     Button btnVolver;
+    String NombreUsuario ="";
+    TextView txvNombreUsuario;
     public void ObtenerReferencias()
     {
 
         txvAudio =(TextView)findViewById(R.id.txvAudio);
         btnSubir=(Button)findViewById(R.id.btnSubir);
         btnVolver =(Button)findViewById(R.id.btnVolver);
+        txvNombreUsuario = (TextView)findViewById(R.id.txvUsuario);
 
     }
 
@@ -74,8 +77,9 @@ public class pruebaNotaVoz extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         nombreNota=extras.getString("Nombre");
         IdNota =extras.getInt("IdNota");
+        NombreUsuario = extras.getString("NombreUsuario","");
         OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/"+nombreNota+".3gpp";
-
+        txvNombreUsuario.setText(NombreUsuario);
         txvAudio.setText(nombreNota);
 
         btnSubir.setOnClickListener(btnSubir_click);
