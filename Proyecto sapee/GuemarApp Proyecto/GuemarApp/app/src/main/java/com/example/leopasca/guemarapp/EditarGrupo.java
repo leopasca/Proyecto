@@ -756,6 +756,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
                 dato.put("CordVideoAsteriscoY",yVideo);
                 dato.put("IdUsuario",IdUsuario);
                 dato.put("IdHoja",IdHoja);
+                dato.put("IdGrupo",IdGrupo);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)
@@ -1157,6 +1158,7 @@ public class EditarGrupo extends AppCompatActivity implements OnPageChangeListen
                 dato.put("CordNotaAsteriscoY",yNota);
                 dato.put("IdHoja",IdHoja);
                 dato.put("IdUsuario",IdUsuario);
+                dato.put("IdGrupo",IdGrupo);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
                         .url(url)

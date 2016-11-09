@@ -38,7 +38,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CrearGrupo" />
         <activity android:name=".EditarGrupo"
-            android:noHistory="true">
+            android:screenOrientation="portrait"
+            >
         </activity>
     </application>
 
