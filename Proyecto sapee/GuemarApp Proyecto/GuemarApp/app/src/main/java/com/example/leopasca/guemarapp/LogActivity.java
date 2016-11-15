@@ -198,10 +198,9 @@ public class LogActivity extends AppCompatActivity {
                 String Contraseña = objUsuario.getString("Password");
                 String Nombre = objUsuario.getString("Nombre");
 
-                    IdGrupo = objUsuario.getInt("IdGrupos");
 
 
-                Usuario usuario = new Usuario(IdUsuario, Email, Contraseña,Nombre,IdGrupo);
+                Usuario usuario = new Usuario(IdUsuario, Email, Contraseña,Nombre);
                 listUsuario.add(usuario);
 
             }

@@ -10,13 +10,12 @@ public class Usuario implements Serializable {
     public String Usuario;
     public String Contraseña;
     public String Nombre;
-    public Integer IdGrupo;
 
-    public Usuario(int IdUsuario, String Usuario, String Contraseña,String Nombre, Integer IdGrupo) {
+    public Usuario(int IdUsuario, String Usuario, String Contraseña,String Nombre) {
         this.IdUsuario = IdUsuario;
         this.Usuario = Usuario;
         this.Contraseña = Contraseña;
         this.Nombre =Nombre;
-        this.IdGrupo=IdGrupo;
+
     }
 }

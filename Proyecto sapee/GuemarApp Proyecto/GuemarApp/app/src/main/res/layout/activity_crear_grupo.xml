@@ -41,7 +41,7 @@
     <ImageButton
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:id="@+id/agregar"
+        android:id="@+id/imbagregar"
         android:src="@mipmap/agregar"
         android:background= "@null"
         android:layout_alignTop="@+id/textView6"

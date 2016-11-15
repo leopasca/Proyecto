@@ -1,17 +1,24 @@
 package com.example.leopasca.guemarapp;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -20,6 +27,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,12 +43,14 @@ public class CrearGrupo extends AppCompatActivity {
     Integer IdGrupo =0 ;
     String Nombre ="";
     Button btnEditar;
+    ImageButton agregar;
     public void ObtenerReferencias()
     {
 
         txvNombre = (TextView)findViewById(R.id.txvNombre);
         listview =(ListView)findViewById(R.id.listView2);
         btnEditar =(Button)findViewById(R.id.btnEditar);
+        agregar = (ImageButton)findViewById(R.id.imbagregar);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +63,45 @@ public class CrearGrupo extends AppCompatActivity {
         TraerGrupo traerGrupo = new TraerGrupo(this);
         traerGrupo.execute("http://leopashost.hol.es/bd/TraerGrupo.php?Nombre="+Nombre);
         btnEditar.setOnClickListener(editar);
+        //listview.setOnItemLongClickListener(listener);
+        agregar.setOnClickListener(agregarUsuarios);
 
 
 
     }
+    public View.OnClickListener agregarUsuarios = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(),AgregarIntegrantes.class);
+            intent.putExtra("IdGrupo",IdGrupo);
+            startActivity(intent);
+
+        }
+    };
+   /* public AdapterView.OnItemLongClickListener listener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            String Id= (listview.getItemAtPosition(position).toString());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+            builder.setTitle("Comentario");
+            builder.setMessage("Presione el documento para crear un comentario");
+            builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                }
+
+            });
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+
+                }
+            });
+            Dialog dialog = builder.create();
+            dialog.show();
+            return false;
+        }
+    };*/
 
     class TraerGrupo extends AsyncTask<String, Void, Integer> {
         private OkHttpClient client = new OkHttpClient();
@@ -120,6 +165,38 @@ public class CrearGrupo extends AppCompatActivity {
             return listgrupos;
         }
 
+    }
+    class EliminarIntegrante extends AsyncTask<String,Void,String>
+    {
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Toast.makeText(getApplicationContext(), listo, Toast.LENGTH_SHORT).show();
+        }
+        protected String doInBackground(String...params) {
+            String idef = params[0];
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/EliminarIntegrante.php";
+                JSONObject dato = new JSONObject();
+                dato.put("IdVideo", idef);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                Log.d("Response", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "Video Eliminado";
+        }
     }
 
     class TraerIntegrantes extends AsyncTask<String, Void, List<Usuario>> {
@@ -185,9 +262,9 @@ public class CrearGrupo extends AppCompatActivity {
                 Integer IdUsuario = objComen.getInt("IdUsuario");
                 String Usuario = objComen.getString("Email");
                 String Contraseña = objComen.getString("Password");
-                Integer IdGrupo = objComen.getInt("IdGrupos");
+
                 String Nombre = objComen.getString("Nombre");
-                Usuario usuario = new Usuario(IdUsuario,Usuario,Contraseña,Nombre,IdGrupo);
+                Usuario usuario = new Usuario(IdUsuario,Usuario,Contraseña,Nombre);
                 listInteg.add(usuario);
 
             }

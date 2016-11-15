@@ -138,7 +138,9 @@ public class editar extends Fragment implements OnPageChangeListener{
         liscom = new ArrayList<>();
         lisvid = new ArrayList<>();
         lisnot = new ArrayList<>();
-        pdfView.fromAsset("beitza.pdf").onPageChange(this).load();
+
+        pdfView.fromAsset("beitza.pdf").showMinimap(false).onPageChange(this).load();
+
         int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());

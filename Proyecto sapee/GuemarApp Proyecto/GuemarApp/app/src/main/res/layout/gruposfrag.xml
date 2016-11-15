@@ -7,7 +7,8 @@
         android:layout_width="wrap_content"
         android:layout_height="476dp"
         android:id="@+id/listView"
-        android:layout_gravity="center_horizontal|bottom" />
+        android:layout_gravity="center_horizontal|bottom"
+        android:clickable="true"/>
 
     <Button
         android:layout_width="match_parent"
