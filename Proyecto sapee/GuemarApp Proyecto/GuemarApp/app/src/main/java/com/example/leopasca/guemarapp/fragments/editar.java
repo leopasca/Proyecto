@@ -135,11 +135,14 @@ public class editar extends Fragment implements OnPageChangeListener{
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ObtenerReferencias();
+        Bundle bundle = getArguments();
+        Integer pagina = bundle.getInt("pagina");
         liscom = new ArrayList<>();
         lisvid = new ArrayList<>();
         lisnot = new ArrayList<>();
 
-        pdfView.fromAsset("beitza.pdf").showMinimap(false).onPageChange(this).load();
+        pdfView.fromAsset("beitza.pdf").showMinimap(false).onPageChange(this).defaultPage(pagina).load();
+
 
         int num = pdfView.getCurrentPage();
         imbComentario.setOnClickListener(imbComentario_click);

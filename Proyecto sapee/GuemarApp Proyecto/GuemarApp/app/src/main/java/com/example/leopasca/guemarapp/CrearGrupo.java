@@ -44,6 +44,8 @@ public class CrearGrupo extends AppCompatActivity {
     String Nombre ="";
     Button btnEditar;
     ImageButton agregar;
+    ArrayList<String> Nombres;
+    ArrayAdapter<String> adapter;
     public void ObtenerReferencias()
     {
 
@@ -63,7 +65,7 @@ public class CrearGrupo extends AppCompatActivity {
         TraerGrupo traerGrupo = new TraerGrupo(this);
         traerGrupo.execute("http://leopashost.hol.es/bd/TraerGrupo.php?Nombre="+Nombre);
         btnEditar.setOnClickListener(editar);
-        //listview.setOnItemLongClickListener(listener);
+        listview.setOnItemLongClickListener(listener);
         agregar.setOnClickListener(agregarUsuarios);
 
 
@@ -74,19 +76,27 @@ public class CrearGrupo extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent(getApplicationContext(),AgregarIntegrantes.class);
             intent.putExtra("IdGrupo",IdGrupo);
+            intent.putExtra("Nombre",Nombre);
             startActivity(intent);
+            finish();
 
         }
     };
-   /* public AdapterView.OnItemLongClickListener listener = new AdapterView.OnItemLongClickListener() {
+    public AdapterView.OnItemLongClickListener listener = new AdapterView.OnItemLongClickListener() {
         @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
             String Id= (listview.getItemAtPosition(position).toString());
-            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-            builder.setTitle("Comentario");
-            builder.setMessage("Presione el documento para crear un comentario");
+            AlertDialog.Builder builder = new AlertDialog.Builder(CrearGrupo.this);
+            builder.setTitle("Eliminar Integrante");
+            builder.setMessage("¿Esta seguro que quiere eliminar este integrante?");
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
+                    String NombreIntegrante = listview.getItemAtPosition(position).toString();
+                    EliminarIntegrante eliminar = new EliminarIntegrante(CrearGrupo.this);
+                    eliminar.execute(NombreIntegrante);
+                    Nombres.remove(position);
+                    adapter.notifyDataSetChanged();
+
 
                 }
 
@@ -101,7 +111,7 @@ public class CrearGrupo extends AppCompatActivity {
             dialog.show();
             return false;
         }
-    };*/
+    };
 
     class TraerGrupo extends AsyncTask<String, Void, Integer> {
         private OkHttpClient client = new OkHttpClient();
@@ -168,10 +178,27 @@ public class CrearGrupo extends AppCompatActivity {
     }
     class EliminarIntegrante extends AsyncTask<String,Void,String>
     {
+        private ProgressDialog pdia;
+        public Context context;
+        public EliminarIntegrante(Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+        protected void onPreExecute(){
+            this.pdia.setMessage("Eliminando");
+            this.pdia.show();
+        }
+
         @Override
         protected void onPostExecute(String listo) {
             super.onPostExecute(listo);
+            if (pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
             Toast.makeText(getApplicationContext(), listo, Toast.LENGTH_SHORT).show();
+
         }
         protected String doInBackground(String...params) {
             String idef = params[0];
@@ -182,7 +209,8 @@ public class CrearGrupo extends AppCompatActivity {
                 OkHttpClient client = new  OkHttpClient();
                 String url ="http://leopashost.hol.es/bd/EliminarIntegrante.php";
                 JSONObject dato = new JSONObject();
-                dato.put("IdVideo", idef);
+                dato.put("Nombre", idef);
+                dato.put("IdGrupo",IdGrupo);
 
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
                 Request request = new Request.Builder()
@@ -195,7 +223,7 @@ public class CrearGrupo extends AppCompatActivity {
             catch (IOException|JSONException e) {
                 Log.d("Error", e.getMessage());
             }
-            return "Video Eliminado";
+            return "Integrante Eliminado";
         }
     }
 
@@ -220,12 +248,12 @@ public class CrearGrupo extends AppCompatActivity {
             {
                 pdia.dismiss();
             }
-            ArrayList<String> Nombres = new ArrayList<String>();
+             Nombres = new ArrayList<String>();
             for(Usuario comen:comentResult) {
                 String Nombre = comen.Nombre;
                 Nombres.add(Nombre);
             }
-            ArrayAdapter<String> adapter=
+            adapter=
                     new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,Nombres);
             listview.setAdapter(adapter);
 

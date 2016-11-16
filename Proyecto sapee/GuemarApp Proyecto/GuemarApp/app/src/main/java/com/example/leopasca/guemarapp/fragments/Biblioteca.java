@@ -43,7 +43,7 @@ public class Biblioteca extends Fragment{
         @Override
         public void onClick(View v) {
             FragmentManager fm = getFragmentManager();
-            fm.beginTransaction().replace(R.id.content_frame, new hojas()).commit();
+            fm.beginTransaction().replace(R.id.content_frame, new paginas()).commit();
         }
     };
 }

@@ -14,12 +14,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,9 +35,15 @@ import java.util.List;
 public class AgregarIntegrantes extends AppCompatActivity {
     ListView listview;
     Integer IdGrupo =0;
+    ArrayList<String> Nombres;
+    ArrayAdapter<String> adapter;
+    ArrayList<String>NombresAgregar;
+    Button btnListo;
+    String NombreGrupo ="";
     public void ObtenerReferencias()
     {
         listview =(ListView)findViewById(R.id.listAgregar);
+        btnListo = (Button) findViewById(R.id.btnListo);
 
     }
     @Override
@@ -42,18 +52,99 @@ public class AgregarIntegrantes extends AppCompatActivity {
         setContentView(R.layout.activity_agregar_integrantes);
         ObtenerReferencias();
         Intent intent = getIntent();
+        NombresAgregar = new ArrayList<String>();
         IdGrupo = intent.getIntExtra("IdGrupo",0);
-        TraerIntegrantes traerIntegrantes = new TraerIntegrantes(getApplicationContext());
+        NombreGrupo =intent.getStringExtra("Nombre");
+        TraerIntegrantes traerIntegrantes = new TraerIntegrantes(this);
         traerIntegrantes.execute("http://leopashost.hol.es/bd/TraerIntegrantesAgregar.php?IdGrupo="+IdGrupo);
         listview.setOnItemClickListener(item);
+        btnListo.setOnClickListener(listo);
     }
+    public View.OnClickListener listo = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+         AgregarIntegrantesGrupo agregar = new AgregarIntegrantesGrupo(AgregarIntegrantes.this);
+         agregar.execute("http://leopashost.hol.es/bd/AgregarIntegrantesGrupo.php");
+        }
+    };
     public AdapterView.OnItemClickListener item = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String Id= (listview.getItemAtPosition(position).toString());
+            NombresAgregar.add(Id);
+            Toast.makeText(AgregarIntegrantes.this, "añadido", Toast.LENGTH_SHORT).show();
+            Nombres.remove(position);
+            adapter.notifyDataSetChanged();
+
 
         }
     };
+    @Override
+    public void onBackPressed()
+    {
+
+        // super.onBackPressed(); // Comment this super call to avoid calling finish()
+    }
+    class AgregarIntegrantesGrupo extends AsyncTask<String,Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+        private ProgressDialog pdia;
+        public Context context;
+        public AgregarIntegrantesGrupo(Context activity)
+        {
+            context = activity;
+            pdia = new ProgressDialog(context);
+        }
+
+        protected void onPreExecute(){
+            this.pdia.setMessage("Cargando...");
+            this.pdia.show();
+        }
+        @Override
+        protected void onPostExecute(String Registrado) {
+            super.onPostExecute(Registrado);
+            if(pdia.isShowing())
+            {
+                pdia.dismiss();
+            }
+            Toast.makeText(getApplicationContext(), Registrado, Toast.LENGTH_SHORT).show();
+            Intent intentVuelta = new Intent(getApplicationContext(),CrearGrupo.class);
+            intentVuelta.putExtra("Nombre",NombreGrupo);
+            startActivity(intentVuelta);
+            finish();
+
+        }
+
+        @Override
+        protected String doInBackground(String...params) {
+            String url = params[0];
+
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+            try {
+                for (int i=0 ; i< NombresAgregar.size();i++) {
+                    String NombreUsuario = NombresAgregar.get(i);
+                    OkHttpClient client = new OkHttpClient();
+
+                    JSONObject dato = new JSONObject();
+                    dato.put("Nombre", NombreUsuario);
+                    dato.put("IdGrupo", IdGrupo);
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    //Log.d("Response", response.body().string());
+                }
+            }
+            catch (IOException |JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "Añadidos";
+        }
+
+
+    }
     class TraerIntegrantes extends AsyncTask<String, Void, List<Usuario>> {
         private OkHttpClient client = new OkHttpClient();
         private ProgressDialog pdia;
@@ -63,6 +154,7 @@ public class AgregarIntegrantes extends AppCompatActivity {
             context = activity;
             pdia = new ProgressDialog(context);
         }
+        @Override
         protected void onPreExecute(){
             this.pdia.setMessage("Cargando Integrantes");
             this.pdia.show();
@@ -75,12 +167,12 @@ public class AgregarIntegrantes extends AppCompatActivity {
             {
                 pdia.dismiss();
             }
-            ArrayList<String> Nombres = new ArrayList<String>();
+             Nombres = new ArrayList<String>();
             for(Usuario comen:comentResult) {
                 String Nombre = comen.Nombre;
                 Nombres.add(Nombre);
             }
-            ArrayAdapter<String> adapter=
+             adapter=
                     new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,Nombres);
             listview.setAdapter(adapter);
 
