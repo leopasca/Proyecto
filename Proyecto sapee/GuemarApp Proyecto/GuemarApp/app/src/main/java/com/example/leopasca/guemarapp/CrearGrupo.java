@@ -5,7 +5,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ public class CrearGrupo extends AppCompatActivity {
     ImageButton agregar;
     ArrayList<String> Nombres;
     ArrayAdapter<String> adapter;
+    Button btnEliminarGrupo;
     public void ObtenerReferencias()
     {
 
@@ -53,6 +56,7 @@ public class CrearGrupo extends AppCompatActivity {
         listview =(ListView)findViewById(R.id.listView2);
         btnEditar =(Button)findViewById(R.id.btnEditar);
         agregar = (ImageButton)findViewById(R.id.imbagregar);
+        btnEliminarGrupo =(Button)findViewById(R.id.btnEliminarGrupo);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +71,53 @@ public class CrearGrupo extends AppCompatActivity {
         btnEditar.setOnClickListener(editar);
         listview.setOnItemLongClickListener(listener);
         agregar.setOnClickListener(agregarUsuarios);
+        btnEliminarGrupo.setOnClickListener(Eliminar);
 
 
 
+    }
+    public View.OnClickListener Eliminar = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            EliminarGrupo eliminar = new EliminarGrupo();
+            eliminar.execute(1);
+        }
+    };
+    class EliminarGrupo extends AsyncTask<Integer,Void,String>
+    {
+        @Override
+        protected void onPostExecute(String listo) {
+            super.onPostExecute(listo);
+            Toast.makeText(CrearGrupo.this, listo, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        protected String doInBackground(Integer...params) {
+            Integer idef = params[0];
+            HttpPost post = new HttpPost();
+            post.setHeader("content-type", "application/json");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int IdUsuario = prefs.getInt("IdUsuario",0);
+
+            try {
+                OkHttpClient client = new  OkHttpClient();
+                String url ="http://leopashost.hol.es/bd/EliminarGrupo.php";
+                JSONObject dato = new JSONObject();
+                dato.put("IdGrupo", IdGrupo);
+                dato.put("IdUsuario",IdUsuario);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), dato.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = client.newCall(request).execute();
+                Log.d("Response", response.body().string());
+            }
+            catch (IOException|JSONException e) {
+                Log.d("Error", e.getMessage());
+            }
+            return "Grupo Eliminado";
+        }
     }
     public View.OnClickListener agregarUsuarios = new View.OnClickListener() {
         @Override
